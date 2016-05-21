@@ -1,38 +1,30 @@
-Role Name
-=========
+## [![DebOps project](http://debops.org/images/debops-small.png)](http://debops.org) checkmk_server
 
-A brief description of the role goes here.
+This role installs and manages [Check_MK](http://mathias-kettner.com/check_mk.html),
+a Nagios-based system monitoring solution.
 
-Requirements
-------------
+### Installation
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role requires at least Ansible `v1.9.0`.
 
-Role Variables
---------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+### Role dependencies
 
-Dependencies
-------------
+There are no dependencies to other Ansible roles.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
-Example Playbook
-----------------
+### Are you using this as a standalone role without DebOps?
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+You may need to include missing roles from the [DebOps common
+playbook](https://github.com/debops/debops-playbooks/blob/master/playbooks/common.yml)
+into your playbook.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+[Try DebOps now](https://github.com/debops/debops) for a complete solution to run your Debian-based infrastructure.
 
-License
--------
 
-BSD
+### Authors and license
 
-Author Information
-------------------
+`checkmk_server` role was written by:
+- Reto Gantenbein | [e-mail](mailto:reto.gantenbein@linuxmonk.ch) | [GitHub](https://github.com/ganto)
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+License: [GPLv3](https://tldrlegal.com/license/gnu-general-public-license-v3-%28gpl-3%29)

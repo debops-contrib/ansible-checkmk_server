@@ -1,2 +1,37 @@
 ---
-# tasks file for ansible-checkmk
+
+- name: Install prerequisite packages
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ checkmk_server__prerequisite_packages }}'
+
+- name: Check check-mk-raw package version
+  shell: dpkg-query -W -f='${Version}\n' check-mk-raw-{{ checkmk_server__version }} | cut -d- -f1
+  register: checkmk_server_register_version
+  changed_when: False
+  failed_when: False
+  always_run: True
+
+- name: Download Check_MK RAW package
+  get_url:
+    url: '{{ checkmk_server__raw_package }}'
+    dest: '/var/cache/apt/archives/{{ checkmk_server__raw_package | basename }}'
+  register: checkmk_server_register_download
+  when: (not checkmk_server_register_version.stdout) and
+        (checkmk_server__raw_package | match('^http'))
+
+- name: Install local Check_MK RAW package
+  apt:
+    deb: '{{ "/var/cache/apt/archives/" + (checkmk_server__raw_package | basename) if checkmk_server_register_download|d() else checkmk_server__raw_package }}'
+    state: present
+  register: checkmk_server_register_install
+  when: (not checkmk_server_register_version.stdout) and
+        ((checkmk_server__raw_package | splitext)[1] == '.deb')
+
+- name: Install Check_MK RAW package from repository
+  apt:
+    name: '{{ checkmk_server__raw_package }}'
+    state: present
+  when: (not checkmk_server_register_version.stdout) and
+        (not checkmk_server_register_install|d())

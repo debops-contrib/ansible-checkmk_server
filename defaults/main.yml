@@ -1,2 +1,36 @@
 ---
-# defaults file for ansible-checkmk
+# Default variables
+# =================
+
+# ---------------------
+# General Configuration
+# ---------------------
+
+# .. envvar:: checkmk_server__version
+#
+# Check_MK software version
+checkmk_server__version: '1.2.8p1'
+
+
+# .. envvar:: checkmk_server__site
+#
+# Check_MK server site name
+checkmk_server__site: 'debops'
+
+
+# ------------
+# APT packages
+# ------------
+
+# .. envvar:: checkmk_server__raw_package
+#
+# Check_MK RAW package download URL. Alternatively this can also be a local
+# deb file or a package name in an already available apt repository.
+checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_server__version }}/check-mk-raw-{{ checkmk_server__version }}_0.{{ ansible_distribution_release }}_amd64.deb'
+
+
+# .. envvar:: checkmk_server__prerequisite_packages
+#
+# List of prerequisite packages which must be available before installing
+# the Check_MK RAW package
+checkmk_server__prerequisite_packages: [ 'apache2' ]
