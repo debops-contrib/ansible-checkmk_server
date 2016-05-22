@@ -5,12 +5,15 @@ a Nagios-based system monitoring solution.
 
 ### Installation
 
-This role requires at least Ansible `v1.9.0`.
+This role requires at least Ansible `v1.9.0`. To install it, clone it
+into your DebOps project roles directory or `/etc/ansible/roles`:
+
+    git clone https://github.com/debops-contrib/ansible-checkmk_server.git debops.checkmk_server
 
 
 ### Role dependencies
 
-There are no dependencies to other Ansible roles.
+- `debops.ferm`
 
 
 ### Are you using this as a standalone role without DebOps?
