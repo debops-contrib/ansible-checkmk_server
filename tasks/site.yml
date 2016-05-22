@@ -1,0 +1,46 @@
+---
+#
+# Check_MK site configuration
+#
+- name: Create Check_MK site
+  command: omd create '{{ checkmk_server__site }}'
+  args:
+    creates: '/omd/sites/{{ checkmk_server__site }}/etc/omd/site.conf'
+
+- name: Check cron.allow file
+  stat:
+    path: '/etc/cron.allow'
+  register: checkmk_server_register_cron
+
+- name: Grant cron permissions to Check_MK user
+  lineinfile:
+    dest: '/etc/cron.allow'
+    line: '{{ checkmk_server__user }}'
+    regexp: '^{{ checkmk_server__user }}$'
+  when: checkmk_server_register_cron.stat.exists
+  notify: [ 'Restart Check_MK' ]
+
+- name: Get Check_MK site runtime configuration
+  command: omd config '{{ checkmk_server__site }}' show '{{ item.var }}'
+  with_items: '{{ checkmk_server__runtime_config }}'
+  register: checkmk_server_register_runtime
+  changed_when: False
+  always_run: True
+
+- name: Shutdown Check_MK site (if required)
+  service:
+    name: 'check-mk-raw-{{ checkmk_server__version }}'
+    state: stopped
+  when: not item.stdout == item.item.value
+  with_items: '{{ checkmk_server_register_runtime.results }}'
+
+- name: Set Check_MK site runtime properties
+  command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
+  when: not item.stdout == item.item.value
+  with_items: '{{ checkmk_server_register_runtime.results }}'
+
+- name: Enable and start Check_MK site
+  service:
+    name: 'check-mk-raw-{{ checkmk_server__version }}'
+    state: started
+    enabled: yes

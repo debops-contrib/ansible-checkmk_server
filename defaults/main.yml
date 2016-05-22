@@ -20,12 +20,6 @@ checkmk_server__patches:
     file: '/omd/versions/{{ checkmk_server__version }}.cre/bin/omd'
 
 
-# .. envvar:: checkmk_server__site
-#
-# Check_MK server site name
-checkmk_server__site: 'debops'
-
-
 # ------------
 # APT packages
 # ------------
@@ -42,3 +36,30 @@ checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_serv
 # List of prerequisite packages which must be available before installing
 # the Check_MK RAW package
 checkmk_server__prerequisite_packages: [ 'apache2', 'aptitude' ]
+
+
+# ---------------------------
+# Check_MK Site Configuration
+# ---------------------------
+
+# .. envvar:: checkmk_server__site
+#
+# Check_MK site name
+checkmk_server__site: 'debops'
+
+
+# .. envvar:: checkmk__server_user
+#
+# Check_MK site user name (mustn't exist before creating the site)
+checkmk_server__user: '{{ checkmk_server__site }}'
+
+
+# .. envvar:: checkmk_server__runtime_config
+#
+# Check_MK site runtime configuration (``omd config``). Changing
+# these values will shutdown Check_MK for reconfiguration.
+checkmk_server__runtime_config:
+  - var: 'ADMIN_MAIL'
+    value: 'hostmaster@{{ ansible_domain }}'
+  - var: 'CORE'
+    value: 'icinga'

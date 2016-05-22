@@ -1,2 +1,6 @@
 ---
-# handlers file for ansible-checkmk
+
+- name: Restart Check_MK
+  service:
+    name: 'check-mk-raw-{{ checkmk_server__version }}'
+    state: restarted
