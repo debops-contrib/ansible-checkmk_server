@@ -94,6 +94,15 @@ checkmk_server__runtime_config:
     value: 'icinga'
 
 
+# .. envvar:: checkmk_server__sshkeys
+#
+# Indicate if a SSH keypair should be provided to allow agent
+# connections via SSH. For more information check
+# :ref:`checkmk_server__sshkeys`.
+checkmk_server__sshkeys:
+  generate_keypair: True
+
+
 # -----------------
 # PKI Configuration
 # -----------------

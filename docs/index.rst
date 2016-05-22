@@ -8,6 +8,7 @@ Ansible role: debops.checkmk_server
    installation
    getting-started
    defaults
+   defaults-configuration
    guides
    copyright
    credits

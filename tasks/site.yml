@@ -44,3 +44,43 @@
     name: 'check-mk-raw-{{ checkmk_server__version }}'
     state: started
     enabled: yes
+
+- name: Get Check_MK site user home directory
+  shell: 'getent passwd {{ checkmk_server__user }} | cut -d":" -f6'
+  register: checkmk_server_register_home
+  changed_when: False
+  always_run: True
+
+- name: Generate SSH keypair
+  become_user: '{{ checkmk_server__user }}'
+  command: 'ssh-keygen {{ "-b " + checkmk_server__sshkeys.keysize if "keysize" in checkmk_server__sshkeys else "-b 4096" }} -f {{ checkmk_server_register_home.stdout }}/.ssh/id_rsa -N ""'
+  args:
+    creates: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa'
+  when: checkmk_server__sshkeys|d() and
+        ("generate_keypair" in checkmk_server__sshkeys|d() and
+         checkmk_server__sshkeys.generate_keypair)
+
+- name: Copy SSH private key
+  become_user: '{{ checkmk_server__user }}'
+  copy:
+    src: '{{ checkmk_server__sshkeys.privatekey_file }}'
+    dest: '{{ checkmk_register_home.stdout }}/.ssh/id_rsa'
+    directory_mode: '0700'
+    mode: '0600'
+  when: checkmk_server__sshkeys|d() and
+        "privatekey_file" in checkmk_server__sshkeys|d()
+
+- name: Copy SSH public key
+  become_user: '{{ checkmk_server_user }}'
+  copy:
+    src: '{{ checkmk_server__sshkeys.publickey_file }}'
+    dest: '{{ checkmk_register_home.stdout }}/.ssh/id_rsa.pub'
+    mode: '0644'
+  when: checkmk_server__sshkeys|d() and
+        "publickey_file" in checkmk_server__sshkeys|d()
+
+- name: Read SSH public key
+  command: 'cat {{ checkmk_server_register_home.stdout }}/.ssh/id_rsa.pub'
+  changed_when: False
+  register: checkmk_server_register_ssh_pubkey
+  when: checkmk_server__sshkeys|d()
