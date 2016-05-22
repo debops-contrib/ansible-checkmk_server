@@ -1,6 +1,12 @@
 ---
 
-dependencies: []
+dependencies:
+
+  - role: debops.ferm
+    tags: [ 'depend::ferm', 'depend::ferm:checkmk_server', 'depend-of::checkmk_server', 'type::dependency' ]
+    ferm__dependent_rules: '{{ checkmk_server__ferm_dependent_rules }}'
+    when: checkmk_server__dependencies | bool
+
 
 galaxy_info:
 
