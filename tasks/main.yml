@@ -51,5 +51,42 @@
   when: checkmk_server_register_apt_install.changed or
         checkmk_server_register_deb_install.changed
 
+- name: Set TLS options
+  template:
+    src: 'etc/apache2/mods-available/ssl.conf.j2'
+    dest: '/etc/apache2/mods-available/ssl.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: checkmk_server__pki|d(False)
+  notify: [ 'Reload apache2' ]
+
+- name: Check apache2 mod_ssl status
+  stat:
+    path: '/etc/apache2/mods-enabled/ssl.load'
+  register: checkmk_server_register_mod_ssl
+  changed_when: False
+  always_run: True
+
+- name: Enable apache2 mod_headers
+  command: 'a2enmod headers'
+  notify: [ 'Reload apache2' ]
+
+- name: Enable apache2 mod_ssl
+  command: '{{ item }}'
+  with_items:
+    - 'a2enmod ssl'
+    - 'a2ensite default-ssl'
+  when: checkmk_server__pki|d(False) and not checkmk_server_register_mod_ssl.stat.exists
+  notify: [ 'Reload apache2' ]
+
+- name: Disable apache2 mod_ssl
+  command: '{{ item }}'
+  with_items:
+    - 'a2dismod ssl'
+    - 'a2dissite default-ssl'
+  when: not checkmk_server__pki|d(False) and checkmk_server_register_mod_ssl.stat.exists
+  notify: [ 'Reload apache2' ]
+
 - include: site.yml
   when: checkmk_server__site|d()

@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+<IfModule mod_ssl.c>
+
+	SSLRandomSeed startup builtin
+	SSLRandomSeed startup file:/dev/urandom 512
+	SSLRandomSeed connect builtin
+	SSLRandomSeed connect file:/dev/urandom 512
+
+	AddType application/x-x509-ca-cert .crt
+	AddType application/x-pkcs7-crl	.crl
+
+	SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase
+
+	SSLSessionCache shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)
+	SSLSessionCacheTimeout 300
+
+{% if not 'SSLCipherSuite' in checkmk_server__tls_options %}
+	SSLCipherSuite HIGH:!aNULL
+{% endif %}
+{% if not 'SSLProtocol' in checkmk_server__tls_options %}
+	SSLProtocol all -SSLv3
+{% endif %}
+{% for key, value in checkmk_server__tls_options.iteritems() %}
+	{{ key }} {{ value }}
+{% endfor %}
+
+	SSLCertificateFile {{ checkmk_server__pki_path + "/" + checkmk_server__pki_realm + "/" + checkmk_server__pki_crt }}
+	SSLCertificateKeyFile {{ checkmk_server__pki_path + "/" + checkmk_server__pki_realm + "/" + checkmk_server__pki_key }}
+	SSLCertificateChainFile {{ checkmk_server__pki_path + "/" + checkmk_server__pki_realm + "/" + checkmk_server__pki_ca }}
+
+</IfModule>

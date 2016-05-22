@@ -18,6 +18,8 @@ checkmk_server__version: '1.2.8p1'
 checkmk_server__patches:
   - patch: 'check-mk-raw-1.2.6p15-fix-omd-setup.patch'
     file: '/omd/versions/{{ checkmk_server__version }}.cre/bin/omd'
+  - patch: 'check-mk-raw-1.2.6p15-set-https-proxy-header.patch'
+    file: '/omd/versions/default/skel/etc/apache/apache-own.conf'
 
 
 # .. envvar:: checkmk_server__dependencies
@@ -33,12 +35,11 @@ checkmk_server__dependencies: True
 # Firewall configuration using the ``debops.ferm`` Ansible role.
 checkmk_server__ferm_dependent_rules:
   - type: 'accept'
-    dport: [ 'http' ]
+    dport: '{{ [ "http", "https" ] if checkmk_server__pki else [ "http" ] }}'
     saddr: '{{ checkmk_server__allow }}'
     accept_any: True
     weight: '40'
     role: 'checkmk_server'
-    name: 'http'
 
 
 # .. envvar:: checkmk_server__allow
@@ -91,3 +92,63 @@ checkmk_server__runtime_config:
     value: 'hostmaster@{{ ansible_domain }}'
   - var: 'CORE'
     value: 'icinga'
+
+
+# -----------------
+# PKI Configuration
+# -----------------
+
+# .. envvar:: checkmk_server__pki
+#
+# Enable or disable support for HTTPS in Check_MK server (using
+# ``debops.pki``).
+checkmk_server__pki: '{{ (True
+                          if (ansible_local|d() and ansible_local.pki|d() and
+                              ansible_local.pki.enabled|d() | bool)
+                          else False) | bool }}'
+
+
+# .. envvar:: checkmk_server__pki_path
+#
+# Base path for PKI directory.
+checkmk_server__pki_path: '{{ ansible_local.pki.path
+                              if (ansible_local|d() and ansible_local.pki|d() and
+                                  ansible_local.pki.path|d())
+                              else "/etc/pki/realms" }}'
+
+
+# .. envvar:: checkmk_server__pki_realm
+#
+# Default PKI realm used by Check_MK server.
+checkmk_server__pki_realm: '{{ ansible_local.pki.realm
+                               if (ansible_local|d() and ansible_local.pki|d() and
+                                   ansible_local.pki.realm|d())
+                               else "domain" }}'
+
+
+# .. envvar:: checkmk_server__pki_ca
+#
+# Root CA certificate, relative to ``checkmk_server__pki_realm``.
+checkmk_server__pki_ca: 'CA.crt'
+
+
+# .. envvar:: checkmk_server__pki_crt
+#
+# Host certificate, relative to ``checkmk_server__pki_realm``.
+checkmk_server__pki_crt: 'default.crt'
+
+
+# .. envvar:: checkmk_server__pki_key
+#
+# Host private key, relative to ``checkmk_server__pki_realm``.
+checkmk_server__pki_key: 'default.key'
+
+
+# .. envvar:: checkmk_server__tls_options
+#
+# Additional Apache mod_ssl options. Valid configuration keys:
+# ``SSLCipherSuite``, ``SSLHonorCipherOrder``, ``SSLProtocols``,
+# ``SSLStrictSNIVHostCheck``
+checkmk_server__tls_options:
+  SSLHonorCipherOrder: 'On'
+  SSLCipherSuite: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
