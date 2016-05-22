@@ -25,7 +25,7 @@
   apt:
     deb: '{{ "/var/cache/apt/archives/" + (checkmk_server__raw_package | basename) if checkmk_server_register_download|d() else checkmk_server__raw_package }}'
     state: present
-  register: checkmk_server_register_install
+  register: checkmk_server_register_deb_install
   when: (not checkmk_server_register_version.stdout) and
         ((checkmk_server__raw_package | splitext)[1] == '.deb')
 
@@ -33,5 +33,20 @@
   apt:
     name: '{{ checkmk_server__raw_package }}'
     state: present
+  register: checkmk_server_register_apt_install
   when: (not checkmk_server_register_version.stdout) and
-        (not checkmk_server_register_install|d())
+        (not checkmk_server_register_deb_install|d())
+
+- name: Apply patches
+  patch:
+    src: '{{ item.patch }}'
+    dest: '{{ item.file }}'
+    basedir: '/'
+  with_items: '{{ checkmk_server__patches }}'
+  when: checkmk_server_register_apt_install.changed or
+        checkmk_server_register_deb_install.changed
+
+- name: Run OMD setup
+  command: omd --force setup
+  when: checkmk_server_register_apt_install.changed or
+        checkmk_server_register_deb_install.changed

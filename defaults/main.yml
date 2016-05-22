@@ -12,6 +12,14 @@
 checkmk_server__version: '1.2.8p1'
 
 
+# .. envvar:: checkmk_server__patches
+#
+# Custom patches to apply after installing Check_MK package
+checkmk_server__patches:
+  - patch: 'check-mk-raw-1.2.6p15-fix-omd-setup.patch'
+    file: '/omd/versions/{{ checkmk_server__version }}.cre/bin/omd'
+
+
 # .. envvar:: checkmk_server__site
 #
 # Check_MK server site name
@@ -33,4 +41,4 @@ checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_serv
 #
 # List of prerequisite packages which must be available before installing
 # the Check_MK RAW package
-checkmk_server__prerequisite_packages: [ 'apache2' ]
+checkmk_server__prerequisite_packages: [ 'apache2', 'aptitude' ]
