@@ -61,16 +61,24 @@
   when: checkmk_server__pki|d(False)
   notify: [ 'Reload apache2' ]
 
+- name: Check apache2 mod_headers status
+  stat:
+    path: '/etc/apache2/mods-enabled/headers.load'
+  register: checkmk_server_register_mod_headers
+  changed_when: False
+  always_run: True
+
+- name: Enable apache2 mod_headers
+  command: 'a2enmod headers'
+  when: not checkmk_server_register_mod_headers.stat.exists
+  notify: [ 'Reload apache2' ]
+
 - name: Check apache2 mod_ssl status
   stat:
     path: '/etc/apache2/mods-enabled/ssl.load'
   register: checkmk_server_register_mod_ssl
   changed_when: False
   always_run: True
-
-- name: Enable apache2 mod_headers
-  command: 'a2enmod headers'
-  notify: [ 'Reload apache2' ]
 
 - name: Enable apache2 mod_ssl
   command: '{{ item }}'
