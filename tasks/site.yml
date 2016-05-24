@@ -64,7 +64,7 @@
   become_user: '{{ checkmk_server__user }}'
   copy:
     src: '{{ checkmk_server__sshkeys.privatekey_file }}'
-    dest: '{{ checkmk_register_home.stdout }}/.ssh/id_rsa'
+    dest: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa'
     directory_mode: '0700'
     mode: '0600'
   when: checkmk_server__sshkeys|d() and
@@ -74,7 +74,7 @@
   become_user: '{{ checkmk_server_user }}'
   copy:
     src: '{{ checkmk_server__sshkeys.publickey_file }}'
-    dest: '{{ checkmk_register_home.stdout }}/.ssh/id_rsa.pub'
+    dest: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa.pub'
     mode: '0644'
   when: checkmk_server__sshkeys|d() and
         "publickey_file" in checkmk_server__sshkeys|d()
