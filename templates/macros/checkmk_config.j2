@@ -1,0 +1,23 @@
+{% macro checkmk_config(filename, wato, config_map) %}
+{% if config_map %}
+{%   for entry in config_map %}
+{%     if entry['filename'] == filename and entry['wato'] == wato %}
+{%       if entry['template'] == 'tuple_list' %}
+{{ tuple_list(entry['name'], entry['value']) }}
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+{% endif %}
+{% endmacro %}
+
+
+{#
+ # The tuple_list() macro will generate a list of tuples which must be given
+ # as a list of key/value pairs.
+ #}
+
+{% macro tuple_list(name, elements) %}
+
+{{ name }} += \
+[{% for e in elements %}('{{ e.keys()[0] }}', u'{{ e.values()[0] }}'){% if not loop.last %}, {% endif %}{% endfor %}]
+{% endmacro %}

@@ -103,6 +103,67 @@ checkmk_server__sshkeys:
   generate_keypair: True
 
 
+# ---------------------------
+# Multisite Web Configuration
+# ---------------------------
+
+# .. envvar:: checkmk_server__multisite_config_path
+#
+# Configuration path for Check_MK multisite configurations. Relative to the
+# site's chroot directory.
+checkmk_server__multisite_config_path: 'etc/check_mk/multisite.d'
+
+
+# .. envvar:: checkmk_server__multisite_config_map
+#
+# List of dictionaries which will generate the Check_MK multisite
+# configuration in :envvar:`checkmk_server__multisite_config_path`.
+checkmk_server__multisite_config_map: '{{ checkmk_server__wato_aux_tags }}'
+
+
+# .. envvar:: checkmk_server__wato_aux_tags
+#
+# Define ``wato_aux_tags``
+checkmk_server__wato_aux_tags:
+  - name: 'wato_aux_tags'
+    filename: 'hosttags.mk'
+    template: 'tuple_list'
+    value:
+      - 'snmp': 'monitor via SNMP'
+      - 'tcp': 'monitor via Check_MK Agent'
+    wato: True
+
+
+# ----------------
+# Monitoring Rules
+# ----------------
+
+# .. envvar:: checkmk_server__site_config_path
+#
+# Configuration path for Check_MK main configurations. Relative to the site's
+# chroot directory.
+checkmk_server__site_config_path: 'etc/check_mk/conf.d'
+
+
+# .. envvar:: checkmk_server__site_config_map
+#
+# List of configuration dictionaries which will generate the Check_MK
+# monitoring definitions.
+checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs }}'
+
+
+# .. envvar:: checkmk_server__datasource_programs
+#
+# Define additional ``datasource_programs`` for agent access via SSH.
+checkmk_server__datasource_programs:
+  - name: 'datasource_programs'
+    filename: 'rules.mk'
+    value: 'ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s -l root <IP> /usr/bin/check_mk_agent'
+    tags: [ 'cmk-agent-ssh' ]
+    description: 'Check_MK Agent via SSH'
+    wato: True
+
+
 # -----------------
 # PKI Configuration
 # -----------------

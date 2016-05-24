@@ -50,6 +50,7 @@
   register: checkmk_server_register_home
   changed_when: False
   always_run: True
+  tags: [ 'role::checkmk_server:rules' ]
 
 - name: Generate SSH keypair
   become_user: '{{ checkmk_server__user }}'
@@ -84,3 +85,21 @@
   changed_when: False
   register: checkmk_server_register_ssh_pubkey
   when: checkmk_server__sshkeys|d()
+
+- name: Generate Check_MK WATO multisite definitions
+  become_user: '{{ checkmk_server__user }}'
+  template:
+    src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'
+    dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__multisite_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
+    mode: '0644'
+  with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
+  tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
+
+- name: Generate Check_MK WATO monitoring definitions
+  become_user: '{{ checkmk_server__user }}'
+  template:
+    src: '{{ lookup("template_src", "etc/check_mk/conf.d/wato/" + item | basename) }}'
+    dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__site_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
+    mode: '0644'
+  with_fileglob: [ '../templates/etc/check_mk/conf.d/wato/*.mk.j2' ]
+  tags: [ 'role::checkmk_server:rules' ]

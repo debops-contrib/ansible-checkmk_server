@@ -33,6 +33,12 @@ Available role tags:
   Main role tag, should be used in the playbook to execute all of the role
   tasks as well as role dependencies.
 
+``role::checkmk_server:rules``
+  Execute tasks which are generating the monitoring rules definitions.
+
+``role::checkmk_server:multisite``
+  Execute tasks which configure the Check_MK multisite Web interface.
+
 ``type::dependency``
   This tag specifies which tasks are defined in role dependencies. You can use
   this to omit them using ``--skip-tags`` parameter.
