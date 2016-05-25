@@ -4,6 +4,8 @@
 {%     if entry['filename'] == filename and entry['wato'] == wato %}
 {%       if entry['template'] == 'tuple_list' %}
 {{ tuple_list(entry['name'], entry['value']) }}
+{%       elif entry['template'] == 'nested_tuplelist_list' %}
+{{ nested_tuplelist_list(entry['name'], entry['value']) }}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
@@ -12,12 +14,30 @@
 
 
 {#
- # The tuple_list() macro will generate a list of tuples which must be given
- # as a list of key/value pairs.
+ # The tuple_list() macro will generate a variable definition with
+ # list of tuples "[('key', u'value')]" which must be given as a list
+ # of key/value pairs.
  #}
 
 {% macro tuple_list(name, elements) %}
 
 {{ name }} += \
 [{% for e in elements %}('{{ e.keys()[0] }}', u'{{ e.values()[0] }}'){% if not loop.last %}, {% endif %}{% endfor %}]
+{% endmacro %}
+
+
+{#
+ # The nested_tuplelist_list() macro will generate a variable definition with
+ # a list of 3-element tuples, where the last element can be a list of
+ # 3-element tuples.
+ #}
+
+{% macro nested_tuplelist_list(name, elements) %}
+
+{{ name }} += \
+[{% for e in elements %}('{{ e.keys()[0] }}',
+  u'{{ e.values()[0].keys()[0] }}',
+  [{% for i in e.values()[0].values()[0] %}('{{ i.keys()[0] }}', u'{{ i.values()[0].keys()[0] }}', [{% for j in i.values()[0].values()[0] %}'{{ j }}'{% if not loop.last %}, {% endif %}{% endfor %}]){% if not loop.last %},
+   {% endif %}{% endfor %}]){% if not loop.last %},
+ {% endif %}{% endfor %}]
 {% endmacro %}
