@@ -61,6 +61,15 @@
         ("generate_keypair" in checkmk_server__sshkeys|d() and
          checkmk_server__sshkeys.generate_keypair)
 
+- name: Create .ssh directory
+  become_user: '{{ checkmk_server__user }}'
+  file:
+    path: '{{ checkmk_server_register_home.stdout }}/.ssh'
+    state: directory
+    mode: '0700'
+  when: checkmk_server__sshkeys|d() and
+        "privatekey_file" in checkmk_server__sshkeys|d()
+
 - name: Copy SSH private key
   become_user: '{{ checkmk_server__user }}'
   copy:
@@ -72,7 +81,7 @@
         "privatekey_file" in checkmk_server__sshkeys|d()
 
 - name: Copy SSH public key
-  become_user: '{{ checkmk_server_user }}'
+  become_user: '{{ checkmk_server__user }}'
   copy:
     src: '{{ checkmk_server__sshkeys.publickey_file }}'
     dest: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa.pub'
