@@ -6,6 +6,8 @@
 {{ key_value(entry['name'], entry['value']) }}
 {%       elif entry['template'] == 'tuple_list' %}
 {{ tuple_list(entry['name'], entry['value']) }}
+{%       elif entry['template'] == 'rule' %}
+{{ rule(entry['name'], entry['value'], entry['tags'], entry['description']) }}
 {%       elif entry['template'] == 'nested_tuplelist_list' %}
 {{ nested_tuplelist_list(entry['name'], entry['value']) }}
 {%       endif %}
@@ -35,6 +37,18 @@
 
 {{ name }} += \
 [{% for e in elements %}('{{ e.keys()[0] }}', u'{{ e.values()[0] }}'){% if not loop.last %}, {% endif %}{% endfor %}]
+{% endmacro %}
+
+
+{#
+ # The rule() macro will generate a (yet) very simplified variable definition
+ # for a monitoring rule.
+ #}
+{% macro rule(name, value, tags, desc) %}
+
+{{ name }} = [
+  ( '{{ value }}', ['{{ tags | join("', '") }}', ], ALL_HOSTS, {'description': u'{{ desc }}'} ),
+] + {{ name }}
 {% endmacro %}
 
 

@@ -6,7 +6,7 @@ Check_MK. It can be extended by custom rule definitions in the Ansible
 inventory.
 
 #}
-{% import 'rules_macros.j2' as macros with context %}
+{% import 'checkmk_config.j2' as macros with context %}
 # encoding: utf-8
 
 
@@ -39,4 +39,4 @@ only_hosts = [
   ( ['!offline', ], ALL_HOSTS, {'description': u'Do not monitor hosts with the tag "offline"'} ),
 ] + only_hosts
 
-{{ macros.checkmk_config('rules.mk', checkmk_server__site_config_map|d([])) }}
+{{ macros.checkmk_config('rules.mk', True, checkmk_server__site_config_map|d([])) }}

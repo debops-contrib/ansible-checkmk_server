@@ -203,6 +203,7 @@ checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs }} +
 checkmk_server__datasource_programs:
   - name: 'datasource_programs'
     filename: 'rules.mk'
+    template: 'rule'
     value: 'ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s -l root <IP> /usr/bin/check_mk_agent'
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
