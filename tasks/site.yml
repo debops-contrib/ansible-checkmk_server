@@ -112,3 +112,13 @@
     mode: '0644'
   with_fileglob: [ '../templates/etc/check_mk/conf.d/wato/*.mk.j2' ]
   tags: [ 'role::checkmk_server:rules' ]
+
+- name: Generate Check_MK custom monitoring definitions
+  become_user: '{{ checkmk_server__user }}'
+  template:
+    src: 'etc/check_mk/conf.d/custom.mk.j2'
+    dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__site_config_path }}/{{ item["filename"] }}'
+    mode: '0644'
+  with_items: '{{ checkmk_server__site_config_map }}'
+  when: not item['wato']
+  tags: [ 'role::checkmk_server:rules' ]

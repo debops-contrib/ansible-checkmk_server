@@ -2,7 +2,9 @@
 {% if config_map %}
 {%   for entry in config_map %}
 {%     if entry['filename'] == filename and entry['wato'] == wato %}
-{%       if entry['template'] == 'tuple_list' %}
+{%       if entry['template'] == 'key_value' %}
+{{ key_value(entry['name'], entry['value']) }}
+{%       elif entry['template'] == 'tuple_list' %}
 {{ tuple_list(entry['name'], entry['value']) }}
 {%       elif entry['template'] == 'nested_tuplelist_list' %}
 {{ nested_tuplelist_list(entry['name'], entry['value']) }}
@@ -10,6 +12,16 @@
 {%     endif %}
 {%   endfor %}
 {% endif %}
+{% endmacro %}
+
+
+{#
+ # The key_value() macro will generate simple key/value variable definitions
+ #}
+
+{% macro key_value(name, value) %}
+
+{{ name }} = {{ value }}
 {% endmacro %}
 
 

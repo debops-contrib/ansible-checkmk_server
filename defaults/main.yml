@@ -193,7 +193,8 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 #
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
-checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs }}'
+checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs }} +
+                                  {{ checkmk_server__if_inventory_uses_description }}'
 
 
 # .. envvar:: checkmk_server__datasource_programs
@@ -206,6 +207,18 @@ checkmk_server__datasource_programs:
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
     wato: True
+
+
+# .. envvar:: checkmk_server__if_inventory_uses_description
+#
+# Set interface name instead of index for network interface check via
+# ``if_inventory_uses_description``.
+checkmk_server__if_inventory_uses_description:
+  - name: 'if_inventory_uses_description'
+    filename: 'networking.mk'
+    template: 'key_value'
+    value: 'True'
+    wato: False
 
 
 # -----------------
