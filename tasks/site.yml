@@ -102,6 +102,7 @@
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__multisite_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
     mode: '0644'
   with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
+  notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
 
 - name: Generate Check_MK WATO monitoring definitions
@@ -111,6 +112,7 @@
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__site_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
     mode: '0644'
   with_fileglob: [ '../templates/etc/check_mk/conf.d/wato/*.mk.j2' ]
+  notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules' ]
 
 - name: Generate Check_MK custom monitoring definitions
@@ -121,4 +123,5 @@
     mode: '0644'
   with_items: '{{ checkmk_server__site_config_map }}'
   when: not item['wato']
+  notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules' ]
