@@ -10,6 +10,8 @@
 {{ rule(entry['name'], entry['value'], entry['tags'], entry['description']) }}
 {%       elif entry['template'] == 'nested_tuplelist_list' %}
 {{ nested_tuplelist_list(entry['name'], entry['value']) }}
+{%       elif entry['template'] == 'custom' %}
+{{ custom(entry['content']) }}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
@@ -66,4 +68,14 @@
   [{% for i in e.values()[0].values()[0] %}('{{ i.keys()[0] }}', u'{{ i.values()[0].keys()[0] }}', [{% for j in i.values()[0].values()[0] %}'{{ j }}'{% if not loop.last %}, {% endif %}{% endfor %}]){% if not loop.last %},
    {% endif %}{% endfor %}]){% if not loop.last %},
  {% endif %}{% endfor %}]
+{% endmacro %}
+
+
+{#
+ # The custom() macro will simply print the given content.
+ #}
+
+{% macro custom(content) %}
+
+{{ content }}
 {% endmacro %}
