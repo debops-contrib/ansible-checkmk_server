@@ -135,6 +135,17 @@
   notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
 
+- name: Generate Check_MK custom multisite definitions
+  become_user: '{{ checkmk_server__user }}'
+  template:
+    src: 'etc/check_mk/multisite.d/custom.mk.j2'
+    dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__multisite_config_path }}/{{ item["filename"] }}'
+    mode: '0644'
+  with_items: '{{ checkmk_server__multisite_config_map }}'
+  when: not item['wato']
+  notify: [ 'Reload Check_MK configuration' ]
+  tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
+
 - name: Generate Check_MK WATO monitoring definitions
   become_user: '{{ checkmk_server__user }}'
   template:
