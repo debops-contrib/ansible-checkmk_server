@@ -12,12 +12,25 @@
 checkmk_server__version: '1.2.8p1'
 
 
+# .. envvar:: checkmk_server__version_label
+#
+# Check_MK version label used with the :command:`omd` tool
+checkmk_server__version_label: '{{ checkmk_server__version }}.cre'
+
+
+# .. envvar:: checkmk_server__site_update
+#
+# Update Check_MK site if current version is lower than
+# :envvar:`checkmk_server__version`
+checkmk_server__site_update: False
+
+
 # .. envvar:: checkmk_server__patches
 #
 # Custom patches to apply after installing Check_MK package
 checkmk_server__patches:
   - patch: 'check-mk-raw-1.2.6p15-fix-omd-setup.patch'
-    file: '/omd/versions/{{ checkmk_server__version }}.cre/bin/omd'
+    file: '/omd/versions/{{ checkmk_server__version_label }}/bin/omd'
   - patch: 'check-mk-raw-1.2.6p15-set-https-proxy-header.patch'
     file: '/omd/versions/default/skel/etc/apache/apache-own.conf'
 

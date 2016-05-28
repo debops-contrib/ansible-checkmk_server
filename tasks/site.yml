@@ -2,10 +2,35 @@
 #
 # Check_MK site configuration
 #
+- name: Get Check_MK default version
+  stat:
+    path: '/omd/versions/default'
+  register: checkmk_server_register_default
+  always_run: True
+
+- name: Set new default version
+  command: omd setversion '{{ checkmk_server__version_label }}'
+  when: (checkmk_server_register_default.stat.lnk_source |
+         basename) != checkmk_server__version_label
+
 - name: Create Check_MK site
   command: omd create '{{ checkmk_server__site }}'
   args:
     creates: '/omd/sites/{{ checkmk_server__site }}/etc/omd/site.conf'
+
+- name: Get Check_MK site version
+  command: omd version '{{ checkmk_server__site }}'
+  register: checkmk_server_register_site_version
+  changed_when: False
+  always_run: True
+
+- name: Trigger site version update
+  set_fact:
+    checkmk_server__fact_update: True
+  always_run: True
+  when: checkmk_server__update|d(False)|bool and
+        ((checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] |
+         version_compare(checkmk_server__version, "<"))
 
 - name: Check cron.allow file
   stat:
@@ -31,8 +56,13 @@
   service:
     name: 'check-mk-raw-{{ checkmk_server__version }}'
     state: stopped
-  when: not item.stdout == item.item.value
+  when: (not item.stdout == item.item.value) or
+        checkmk_server__fact_update|d(False)
   with_items: '{{ checkmk_server_register_runtime.results }}'
+
+- name: Run Check_MK site update
+  command: omd --force update '{{ checkmk_server__site }}'
+  when: checkmk_server__fact_update|d(False)
 
 - name: Set Check_MK site runtime properties
   command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
