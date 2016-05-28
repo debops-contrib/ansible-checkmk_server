@@ -62,6 +62,13 @@ checkmk_server__ferm_dependent_rules:
 checkmk_server__allow: []
 
 
+# .. envvar:: checkmk_server__software_inventory
+#
+# Enable collection of installed software. Requires the ``mk_inventory``
+# plugin to be installed on the Check_MK agents.
+checkmk_server__software_inventory: True
+
+
 # ------------
 # APT packages
 # ------------
@@ -206,8 +213,9 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 #
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
-checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs }} +
-                                  {{ checkmk_server__if_inventory_uses_description }}'
+checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs +
+                                     checkmk_server__if_inventory_uses_description +
+                                     checkmk_server__rules_software_inventory }}'
 
 
 # .. envvar:: checkmk_server__datasource_programs
@@ -221,6 +229,28 @@ checkmk_server__datasource_programs:
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
     wato: True
+
+
+# .. envvar:: checkmk_server__software_inventory_rules:
+#
+# Check_MK rules for enabling software inventory check. This check can be
+# enabled/disabled by setting :envvar:`checkmk_server__software_inventory`.
+checkmk_server__rules_software_inventory:
+  - name: 'inventory_check_interval'
+    filename: 'global.mk'
+    wato: True
+    template: 'key_value'
+    value: 1440
+    rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
+                    else "absent" }}'
+  - name: 'cmk_inv'
+    filename: 'rules.mk'
+    wato: True
+    template: 'active_check'
+    filter: 'ALL_HOSTS'
+    comment: 'Enable collection of hardware/software information'
+    rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
+                    else "absent" }}'
 
 
 # .. envvar:: checkmk_server__if_inventory_uses_description

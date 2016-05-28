@@ -13,6 +13,8 @@
 {{ tuple_list(entry['name'], entry['value']) }}
 {%         elif entry['template'] == 'rule' %}
 {{ rule(entry['name'], entry['value'], entry['tags'], entry['description']) }}
+{%         elif entry['template'] == 'active_check' %}
+{{ active_check(entry['name'], entry['filter'], entry['comment']) }}
 {%         elif entry['template'] == 'nested_tuplelist_list' %}
 {{ nested_tuplelist_list(entry['name'], entry['value']) }}
 {%         elif entry['template'] == 'custom' %}
@@ -57,6 +59,20 @@
 {{ name }} = [
   ( '{{ value }}', ['{{ tags | join("', '") }}', ], ALL_HOSTS, {'description': u'{{ desc }}'} ),
 ] + {{ name }}
+{% endmacro %}
+
+
+{#
+ # The active_check() macro will generate the necessary active_checks variable
+ # definition required to define a regular Nagios active check.
+ #}
+{% macro active_check(name, filter, comment) %}
+
+active_checks.setdefault('{{ name }}', [])
+
+active_checks['{{ name }}'] = [
+  ( None, [], {{ filter }}, {'comment': u'{{ comment }}' } ),
+]
 {% endmacro %}
 
 
