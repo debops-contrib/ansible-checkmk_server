@@ -82,8 +82,16 @@
   always_run: True
   tags: [ 'role::checkmk_server:rules' ]
 
+- name: Create .ssh directory
+  file:
+    path: '{{ checkmk_server_register_home.stdout }}/.ssh'
+    state: directory
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
+    mode: '0700'
+  when: checkmk_server__sshkeys|d()
+
 - name: Generate SSH keypair
-  become_user: '{{ checkmk_server__user }}'
   command: 'ssh-keygen {{ "-b " + checkmk_server__sshkeys.keysize if "keysize" in checkmk_server__sshkeys else "-b 4096" }} -f {{ checkmk_server_register_home.stdout }}/.ssh/id_rsa -N ""'
   args:
     creates: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa'
@@ -91,30 +99,32 @@
         ("generate_keypair" in checkmk_server__sshkeys|d() and
          checkmk_server__sshkeys.generate_keypair)
 
-- name: Create .ssh directory
-  become_user: '{{ checkmk_server__user }}'
+- name: Fix SSH keypair ownership
   file:
-    path: '{{ checkmk_server_register_home.stdout }}/.ssh'
-    state: directory
-    mode: '0700'
+    path: '{{ checkmk_server_register_home.stdout }}/.ssh/{{ item }}'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
+  with_items: [ 'id_rsa', 'id_rsa.pub' ]
   when: checkmk_server__sshkeys|d() and
-        "privatekey_file" in checkmk_server__sshkeys|d()
+        ("generate_keypair" in checkmk_server__sshkeys|d() and
+         checkmk_server__sshkeys.generate_keypair)
 
 - name: Copy SSH private key
-  become_user: '{{ checkmk_server__user }}'
   copy:
     src: '{{ checkmk_server__sshkeys.privatekey_file }}'
     dest: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa'
-    directory_mode: '0700'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0600'
   when: checkmk_server__sshkeys|d() and
         "privatekey_file" in checkmk_server__sshkeys|d()
 
 - name: Copy SSH public key
-  become_user: '{{ checkmk_server__user }}'
   copy:
     src: '{{ checkmk_server__sshkeys.publickey_file }}'
     dest: '{{ checkmk_server_register_home.stdout }}/.ssh/id_rsa.pub'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0644'
   when: checkmk_server__sshkeys|d() and
         "publickey_file" in checkmk_server__sshkeys|d()
@@ -126,20 +136,22 @@
   when: checkmk_server__sshkeys|d()
 
 - name: Generate Check_MK WATO multisite definitions
-  become_user: '{{ checkmk_server__user }}'
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__multisite_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0644'
   with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
 
 - name: Generate Check_MK custom multisite definitions
-  become_user: '{{ checkmk_server__user }}'
   template:
     src: 'etc/check_mk/multisite.d/custom.mk.j2'
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__multisite_config_path }}/{{ item["filename"] }}'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0644'
   with_items: '{{ checkmk_server__multisite_config_map }}'
   when: not item['wato']
@@ -147,20 +159,22 @@
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
 
 - name: Generate Check_MK WATO monitoring definitions
-  become_user: '{{ checkmk_server__user }}'
   template:
     src: '{{ lookup("template_src", "etc/check_mk/conf.d/wato/" + item | basename) }}'
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__site_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0644'
   with_fileglob: [ '../templates/etc/check_mk/conf.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules' ]
 
 - name: Generate Check_MK custom monitoring definitions
-  become_user: '{{ checkmk_server__user }}'
   template:
     src: 'etc/check_mk/conf.d/custom.mk.j2'
     dest: '{{ checkmk_server_register_home.stdout }}/{{ checkmk_server__site_config_path }}/{{ item["filename"] }}'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
     mode: '0644'
   with_items: '{{ checkmk_server__site_config_map }}'
   when: not item['wato']

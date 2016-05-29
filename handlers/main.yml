@@ -6,7 +6,6 @@
     state: restarted
 
 - name: Reload Check_MK configuration
-  become_user: '{{ checkmk_server__user }}'
   command: '/omd/sites/{{ checkmk_server__site }}/bin/cmk --reload'
   environment:
     OMD_ROOT: '/omd/sites/{{ checkmk_server__site }}'

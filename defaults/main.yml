@@ -103,6 +103,12 @@ checkmk_server__site: 'debops'
 checkmk_server__user: '{{ checkmk_server__site }}'
 
 
+# .. envvar:: checkmk__server_group
+#
+# Check_MK site's user primary group name
+checkmk_server__group: '{{ checkmk_server__site }}'
+
+
 # .. envvar:: checkmk_server__runtime_config
 #
 # Check_MK site runtime configuration (``omd config``). Changing
