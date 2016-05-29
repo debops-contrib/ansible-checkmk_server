@@ -48,8 +48,9 @@
 
 - name: Run OMD setup
   command: omd --force setup
-  when: checkmk_server_register_apt_install.changed or
-        checkmk_server_register_deb_install.changed
+  when: (checkmk_server_register_apt_install.changed or
+         checkmk_server_register_deb_install.changed) and
+        ansible_distribution_release != 'precise'
 
 - name: Set TLS options
   template:
