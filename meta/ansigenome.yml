@@ -1,32 +1,5 @@
 ---
 
-dependencies:
-
-  - role: debops.ferm
-    tags: [ 'depend::ferm', 'depend::ferm:checkmk_server', 'depend-of::checkmk_server', 'type::dependency' ]
-    ferm__dependent_rules: '{{ checkmk_server__ferm_dependent_rules }}'
-    when: checkmk_server__dependencies | bool
-
-
-galaxy_info:
-
-  company: 'DebOps'
-  author: Reto Gantenbein
-  description: 'Setup Check_MK monitoring server'
-  license: 'GPLv3'
-  min_ansible_version: '2.0'
-
-  platforms:
-
-    - name: Debian
-      versions:
-        - wheezy
-        - jessie
-
-  galaxy_tags:
-    - system
-    - monitoring
-
 ansigenome_info:
   github_url: 'https://github.com/debops-contrib/ansible-checkmk_server'
   git_branch: 'master'
@@ -36,8 +9,7 @@ ansigenome_info:
 
   license_url: 'https://tldrlegal.com/license/gnu-general-public-license-v3-(gpl-3)'
 
-  status:
-    name: 'beta'
+  status: 'beta'
 
   authors:
     - name:  'Reto Gantenbein'
@@ -45,6 +17,6 @@ ansigenome_info:
       email: 'reto.gantenbein@linuxmonk.ch'
       twitter: ''
       github: 'ganto'
- 
+
   synopsis: |
     This role installs and manages [Check_MK](http://mathias-kettner.com/check_mk.html), a Nagios-based system monitoring solution.
