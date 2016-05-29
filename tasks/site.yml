@@ -54,7 +54,7 @@
 
 - name: Shutdown Check_MK site (if required)
   service:
-    name: 'check-mk-raw-{{ checkmk_server__version }}'
+    name: 'check-mk-raw-{{ (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
     state: stopped
   when: (not item.stdout == item.item.value) or
         checkmk_server__fact_update|d(False)
@@ -71,7 +71,7 @@
 
 - name: Enable and start Check_MK site
   service:
-    name: 'check-mk-raw-{{ checkmk_server__version }}'
+    name: 'check-mk-raw-{{ checkmk_server__version if checkmk_server__fact_update|d() else (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
     state: started
     enabled: yes
 
