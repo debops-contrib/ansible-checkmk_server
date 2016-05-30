@@ -97,18 +97,6 @@ checkmk_server__prerequisite_packages: [ 'apache2', 'aptitude' ]
 checkmk_server__site: 'debops'
 
 
-# .. envvar:: checkmk__server_user
-#
-# Check_MK site user name (mustn't exist before creating the site)
-checkmk_server__user: '{{ checkmk_server__site }}'
-
-
-# .. envvar:: checkmk__server_group
-#
-# Check_MK site's user primary group name
-checkmk_server__group: '{{ checkmk_server__site }}'
-
-
 # .. envvar:: checkmk_server__runtime_config
 #
 # Check_MK site runtime configuration (``omd config``). Changing

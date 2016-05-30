@@ -116,8 +116,7 @@
     group: 'root'
     mode: '0644'
   register: checkmk_server_register_local_facts
-  when: checkmk_server__sshkeys|d() and
-        checkmk_server_register_home.stdout|d()
+  when: checkmk_server__sshkeys|d()
 
 - name: Re-read local facts if they have been changed
   action: setup

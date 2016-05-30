@@ -1,2 +1,10 @@
 ---
-# vars file for ansible-checkmk
+
+# Check_MK site user name (mustn't exist before creating the site)
+checkmk_server__user: '{{ checkmk_server__site }}'
+
+# Check_MK site's user primary group name
+checkmk_server__group: '{{ checkmk_server__site }}'
+
+# Check_MK site chroot directory
+checkmk_server__site_home: '/opt/omd/sites/{{ checkmk_server__site }}'
