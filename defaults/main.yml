@@ -192,6 +192,30 @@ checkmk_server__wato_aux_tags:
     wato: True
 
 
+# .. envvar:: checkmk_server__multisite_roles
+#
+# Multisite permission roles to be configured
+checkmk_server__multisite_roles: '{{ checkmk_server__default_roles }}'
+
+
+# .. envvar:: checkmk_server__default_roles
+#
+# Default upstream multisite permission roles
+checkmk_server__default_roles:
+  admin:
+    alias: 'Administrator'
+    builtin: True
+    permissions: {}
+  guest:
+    alias: 'Guest User'
+    builtin: True
+    permissions: {}
+  user:
+    alias: 'Normal monitoring user'
+    builtin: True
+    permissions: {}
+
+
 # ----------------
 # Monitoring Rules
 # ----------------
