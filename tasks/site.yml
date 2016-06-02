@@ -137,6 +137,19 @@
     mode: '0644'
   tags: [ 'role::checkmk_server:multisite' ]
 
+- name: Read local multisite users definition
+  command: 'sed "1,4d" {{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
+  register: checkmk_server_register_users_mk
+  changed_when: False
+  always_run: True
+  tags: [ 'role::checkmk_server:multisite' ]
+
+- name: Set multisite users definition fact
+  set_fact:
+    checkmk_server_fact_local_users: '{{ checkmk_server_register_users_mk.stdout }}'
+  always_run: True
+  tags: [ 'role::checkmk_server:multisite' ]
+
 - name: Generate Check_MK WATO multisite definitions
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'

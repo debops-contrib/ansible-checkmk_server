@@ -1,0 +1,12 @@
+{#
+ # Combine fact users with multisite users
+ #}
+{% set users = checkmk_server_fact_local_users|d({}) | combine(checkmk_server__multisite_users, recursive=True) %}
+# Written by Multisite UserDB
+# encoding: utf-8
+
+multisite_users = \
+{#
+ # Pretty print and fix that only alias strings are marked to be unicode strings
+ #}
+{{ users | pprint | regex_replace("([ :,][ \[\{])u'", "\\1'") | replace("'alias': '", "'alias': u'") }}
