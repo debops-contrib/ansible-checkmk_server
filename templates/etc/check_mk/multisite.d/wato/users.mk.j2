@@ -1,3 +1,12 @@
+{% for user in checkmk_server__multisite_users|list|d([]) %}
+{#
+ # Strip Ansible-only properties from user definitions
+ #}
+{%   for property in checkmk_server__ansible_user_properties|d([]) %}
+{%     if property in checkmk_server__multisite_users[user]|list %}
+{%       set _ = checkmk_server__multisite_users[user].pop(property) %}
+{%     endif %}
+{%   endfor %}
 {#
  # Combine fact users with multisite users
  #}
