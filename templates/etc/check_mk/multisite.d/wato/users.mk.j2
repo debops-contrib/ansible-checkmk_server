@@ -8,6 +8,15 @@
 {%     endif %}
 {%   endfor %}
 {#
+ # Make sure default arguments are defined
+ #}
+{%   for key, value in checkmk_server__multisite_user_defaults.iteritems() %}
+{%     if user not in checkmk_server_fact_local_users|d({}) and key not in checkmk_server__multisite_users[user]|d({}) %}
+{%       set _ = checkmk_server__multisite_users[user].update({key: value}) %}
+{%     endif %}
+{%   endfor %}
+{% endfor %}
+{#
  # Combine fact users with multisite users
  #}
 {% set users = checkmk_server_fact_local_users|d({}) | combine(checkmk_server__multisite_users, recursive=True) %}

@@ -222,6 +222,18 @@ checkmk_server__default_roles:
 checkmk_server__multisite_users: {}
 
 
+# .. envvar:: checkmk_server__multisite_user_defaults
+#
+# Default user properties set for local users defined in
+# :envvar:`checkmk_server__multisite_users`
+checkmk_server__multisite_user_defaults:
+  force_authuser: False
+  force_authuser_webservice: False
+  locked: False
+  roles: [ 'user' ]
+  start_url: 'dashboard.py'
+
+
 # ----------------
 # Monitoring Rules
 # ----------------
