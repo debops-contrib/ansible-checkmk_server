@@ -143,7 +143,7 @@
     timeout: 60
 
 - name: Read local multisite users definition
-  command: 'sed "1,4d" {{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
+  command: 'sed -e "1,/^multisite_users\s*=/d" {{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
   register: checkmk_server_register_users_mk
   changed_when: False
   always_run: True
