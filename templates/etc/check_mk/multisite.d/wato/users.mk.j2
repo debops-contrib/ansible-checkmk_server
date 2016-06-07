@@ -1,3 +1,19 @@
+{#
+ # This template merges the users read from the original users.mk passed via
+ # ``checkmk_server_fact_local_users`` with the users defined in the Ansible
+ # inventory ``checkmk_server__multisite_users``. The merge is necessary as
+ # users from remote directories such as LDAP or Active Directory are written
+ # down to users.mk by Check_MK and obviously shouldn't be deleted by Ansible.
+ #
+ # The ``multisite_users`` variable in users.mk is a regular Python dictionary
+ # written down by ``save_users()`` in check_mk/web/htdocs/userdb.py. The
+ # user name and alias are unicode strings. All other strings are regular
+ # Python 2 strings.
+ #
+ # The template tries to imitate the original file formatting to avoid
+ # rewriting users.mk in case of file modifications through Check_MK.
+ #
+ #}
 {% for user in checkmk_server__multisite_users|list|d([]) %}
 {#
  # Strip Ansible-only properties from user definitions
@@ -25,6 +41,6 @@
 
 multisite_users = \
 {#
- # Pretty print and fix that only alias strings are marked to be unicode strings
+ # Pretty print dictionary and adapt unicode string hinting
  #}
 {{ users | pprint | regex_replace("([ :,][ \[\{])u'", "\\1'") | replace("'alias': '", "'alias': u'") }}
