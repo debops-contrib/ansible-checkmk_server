@@ -162,6 +162,7 @@
     password: '{{ checkmk_server__multisite_users[item]["password"] }}'
   when: '"password" in checkmk_server__multisite_users[item]'
   with_items: '{{ checkmk_server__multisite_users|list }}'
+  tags: [ 'role::checkmk_server:multisite' ]
 
 - name: Generate Check_MK WATO multisite definitions
   template:
