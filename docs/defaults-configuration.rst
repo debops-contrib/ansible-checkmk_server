@@ -37,3 +37,58 @@ following keys:
 ``publickey_file``
   Pre-generated SSH public key file. Must be the public key of the private
   key set with ``privatekey_file``.
+
+
+.. _checkmk_server__multisite_users:
+
+checkmk_server__multisite_users
+-------------------------------
+
+Configuration dictionary to define local WATO users. When running Ansible
+they are merged into the :file:`users.mk` user database of Check_MK. Users
+already defined in WATO or synchronized from an identity management system
+such as LDAP won't be overwritten.
+
+The dictionary key has to be the user name to create or manage. The following
+properties can be set via Ansible inventory:
+
+``alias``
+  Full name, required.
+
+``password``
+  Optional. Set given password in Apache :file:`htpasswd` file. Will be used
+  for form-based WATO authentication and Icinga, PNP4Nagios and NagVis HTTP
+  basic authentication.
+
+``locked``
+  Optional. Disable login to this account. Defaults to ``False``.
+
+``roles``
+  Optional. List of permission roles defined in
+  :envvar:`checkmk_server__multisite_roles`. Defaults to ``[ 'user' ]``.
+
+``force_authuser``
+  Optional. Only show hosts and services the user is a contact for. Defaults
+  to ``False``.
+
+``force_authuser_webservice``
+  Optional. Export only hosts and services the user is a contact for.
+  Defaults to ``False``.
+
+``start_url``
+  Optional. Start URL to display in main frame. Defaults to ``dashboard.py``.
+
+
+.. _checkmk_server__multisite_users_example:
+
+Example
+~~~~~~~
+
+Create custom administrator account with random password::
+
+    checkmk_server__multisite_users:
+
+      bob:
+        alias: 'Bob Admin'
+        password: '{{ lookup("password", "credentials/check_mk/" + checkmk_server__site + "/bob/password length=15") }}'
+        roles: [ 'admin' ]
