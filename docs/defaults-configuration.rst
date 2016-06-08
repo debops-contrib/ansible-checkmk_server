@@ -56,9 +56,16 @@ properties can be set via Ansible inventory:
   Full name, required.
 
 ``password``
-  Optional. Set given password in Apache :file:`htpasswd` file. Will be used
-  for form-based WATO authentication and Icinga, PNP4Nagios and NagVis HTTP
-  basic authentication.
+  Optional. Set given password in Apache :file:`htpasswd` file. Can be used
+  for form-based authentication in WATO and HTTP basic authentication in
+  Icinga, PNP4Nagios and NagVis.
+
+``automation_secret``
+  Optional. Automation secret for machine accounts. Set this instead of
+  ``item.password`` if the account is used for authentication of `WebAPI`_
+  calls.
+
+.. _WebAPI: https://mathias-kettner.com/checkmk_wato_webapi.html
 
 ``locked``
   Optional. Disable login to this account. Defaults to ``False``.
