@@ -29,8 +29,6 @@ checkmk_server__site_update: False
 #
 # Custom patches to apply after installing Check_MK package
 checkmk_server__patches:
-  - patch: 'check-mk-raw-1.2.6p15-fix-omd-setup.patch'
-    file: '/omd/versions/{{ checkmk_server__version_label }}/bin/omd'
   - patch: 'check-mk-raw-1.2.6p15-set-https-proxy-header.patch'
     file: '/omd/versions/default/skel/etc/apache/apache-own.conf'
 
@@ -84,7 +82,7 @@ checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_serv
 #
 # List of prerequisite packages which must be available before installing
 # the Check_MK RAW package
-checkmk_server__prerequisite_packages: [ 'apache2', 'aptitude' ]
+checkmk_server__prerequisite_packages: [ 'apache2' ]
 
 
 # ---------------------------
