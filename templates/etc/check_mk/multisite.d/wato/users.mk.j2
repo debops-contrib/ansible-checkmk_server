@@ -14,7 +14,7 @@
  # rewriting users.mk in case of file modifications through Check_MK.
  #
  #}
-{% for user in checkmk_server__multisite_users|list|d([]) %}
+{% for user in checkmk_server__multisite_users|d({})|list %}
 {#
  # Strip Ansible-only properties from user definitions
  #}
@@ -26,7 +26,7 @@
 {#
  # Make sure default arguments are defined
  #}
-{%   for key, value in checkmk_server__multisite_user_defaults.iteritems() %}
+{%   for key, value in (checkmk_server__multisite_user_defaults|d({})).iteritems() %}
 {%     if user not in checkmk_server_fact_local_users|d({}) and key not in checkmk_server__multisite_users[user]|d({}) %}
 {%       set _ = checkmk_server__multisite_users[user].update({key: value}) %}
 {%     endif %}
@@ -35,7 +35,7 @@
 {#
  # Combine fact users with multisite users
  #}
-{% set users = checkmk_server_fact_local_users|d({}) | combine(checkmk_server__multisite_users, recursive=True) %}
+{% set users = checkmk_server_fact_local_users|d({}) | combine(checkmk_server__multisite_users|d({}), recursive=True) %}
 # Written by Multisite UserDB
 # encoding: utf-8
 
