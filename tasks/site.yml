@@ -137,13 +137,46 @@
     mode: '0644'
   tags: [ 'role::checkmk_server:multisite' ]
 
+- name: Wait for the site to be started
+  wait_for:
+    path: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
+    timeout: 60
+
+- name: Read local multisite users definition
+  command: 'sed -e "1,/^multisite_users\s*=/d" {{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
+  register: checkmk_server_register_users_mk
+  changed_when: False
+  always_run: True
+  tags: [ 'role::checkmk_server:multisite' ]
+
+- name: Set multisite users definition fact
+  set_fact:
+    checkmk_server_fact_local_users: '{{ checkmk_server_register_users_mk.stdout }}'
+  always_run: True
+  tags: [ 'role::checkmk_server:multisite' ]
+
+- name: Set local multisite user passwords
+  htpasswd:
+    path: '{{ checkmk_server__site_home }}/etc/htpasswd'
+    name: '{{ item }}'
+    password: '{{ checkmk_server__multisite_users[item]["password"]
+                  if "password" in checkmk_server__multisite_users[item]
+                  else checkmk_server__multisite_users[item]["automation_secret"] }}'
+    crypt_scheme: md5_crypt
+  when: ("password" in checkmk_server__multisite_users[item]) or
+        ("automation_secret" in checkmk_server__multisite_users[item])
+  with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
+  tags: [ 'role::checkmk_server:multisite' ]
+
 - name: Generate Check_MK WATO multisite definitions
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'
     dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
     owner: '{{ checkmk_server__user }}'
     group: '{{ checkmk_server__group }}'
-    mode: '0644'
+    mode: '{{ "0660"
+              if item | basename | replace(".j2", "") in [ "hosttags.mk", "users.mk" ]
+              else "0644" }}'
   with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]

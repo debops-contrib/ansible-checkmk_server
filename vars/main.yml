@@ -8,3 +8,6 @@ checkmk_server__group: '{{ checkmk_server__site }}'
 
 # Check_MK site chroot directory
 checkmk_server__site_home: '/opt/omd/sites/{{ checkmk_server__site }}'
+
+# Ansible user properties which are not set in the users.mk
+checkmk_server__ansible_user_properties: [ 'password' ]
