@@ -1,0 +1,56 @@
+{% for _conn in checkmk_server__multisite_user_connections|d([]) %}
+{#
+ # Set bind credentials
+ #}
+{%   if ("binddn" in _conn|list) and ("bindpw" in _conn|list) %}
+{%     set _ = _conn.update({'bind': "'" + _conn.binddn + "', '" + _conn.bindpw + "'"}) %}
+{%   endif %}
+{#
+ # Set plugin configuration
+ #}
+{%   for _plugin in _conn.active_plugins|d({}) %}
+{%     if _plugin == "groups_to_roles" %}
+{%       set _role_mappings = {} %}
+{%       for _role in _conn.active_plugins[_plugin]|list %}
+{%         set _filter_list = [] %}
+{%         for _filter in _conn.active_plugins[_plugin][_role] %}
+{%           set _ = _filter_list.append("'" + _filter.group_dn + "', '" + _filter.connection|d("None") + "'") %}
+{%         endfor %}
+{%         set _ = _role_mappings.update({_role: _filter_list }) %}
+{%       endfor %}
+{%       set _ = _conn.active_plugins.update({_plugin: _role_mappings}) %}
+{%     endif %}
+{%   endfor %}
+{#
+ # Strip Ansible-only properties from user definitions
+ #}
+{%   for _prop in checkmk_server__ansible_user_connections_properties|d([]) %}
+{%     if _prop in _conn|list %}
+{%       set _ = _conn.pop(_prop) %}
+{%     endif %}
+{%   endfor %}
+{#
+ # Make sure default arguments are defined
+ #}
+{%   for _key, _value in (checkmk_server__multisite_user_connection_defaults|d({})).iteritems() %}
+{%     if _key not in _conn|list %}
+{%       set _ = _conn.update({_key: _value}) %}
+{%     endif %}
+{%   endfor %}
+{% endfor %}
+# Written by Multisite UserDB
+# encoding: utf-8
+
+{% if checkmk_server__version | version_compare("1.2.8", ">=") %}
+user_connections = \
+{#
+ # Pretty print dictionary, adapt unicode string hinting and construct tuple from quotes
+ #}
+{{ checkmk_server__multisite_user_connections|d([]) | pprint |
+     replace("'None'", "None") |
+     regex_replace("([ :,\[][ \[\{])u'", "\\1'") |
+     regex_replace(": [u]?\"", ": (u") | replace("\",", "),") |
+     regex_replace("\[\"'", "[(u'") | replace("\"]", ")]") |
+     regex_replace("'(comment|description|group_dn|suffix|user_dn|user_filter_group)': '", "'\\1': u'") }}
+{% endif %}
+

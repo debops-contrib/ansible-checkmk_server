@@ -99,3 +99,242 @@ Create custom administrator account with random password::
         alias: 'Bob Admin'
         password: '{{ lookup("password", "credentials/check_mk/" + checkmk_server__site + "/bob/password length=15") }}'
         roles: [ 'admin' ]
+
+
+.. _checkmk_server__multisite_user_connections:
+
+checkmk_server__multisite_user_connections
+------------------------------------------
+
+List of LDAP user synchronization connection definitions. Multiple connection
+definitions are allowed. Each connection can define the following properties
+via Ansible inventory:
+
+``binddn``
+  Distinguished name used for authenticating against the LDAP server, required.
+
+``bindpw``
+  Password used for authenticating against the LDAP server, required.
+
+``server``
+  LDAP server host name, required.
+
+``group_dn``
+  Base DN for LDAP group queries, required.
+
+``userdn``
+  Base DN for LDAP user queries, required.
+
+``active_plugins``
+  Optional. Configuration dictionary of attribute synchronization plugins. See
+  :ref:`checkmk_server__multisite_ldap_plugins` for more details.
+
+``cache_livetime``
+  Optional. Time in seconds how long to cache LDAP user information. Defaults
+  to: ``300``.
+
+``comment``
+  Optional. Comment about user connection definition.
+
+``connect_timeout``
+  Optional. Connect timeout.
+
+``debug_log``
+  Optional. Enable debug logging for LDAP user synchronization. Allowed values
+  are ``True`` or ``False``. Defaults to: ``False``
+
+``description``
+  Optional. Short description of user connection definition being displayed
+  in the connection list.
+
+``directory_type``
+  Optional. LDAP directory type used to set default user and group attributes.
+  Allowed values are ``openldap``, ``389directoryserver`` or ``ad``. Defaults
+  to: ``openldap``.
+
+``disabled``
+  Optional. Do not enable user connection. Allowed values are ``True`` or
+  ``False``. Defaults to: ``False``
+
+``docu_url``
+  Optional. Documentation URL.
+
+``failover_servers``
+  Optional. List of failover LDAP host names.
+
+``group_filter``
+  Optional. Group search filter (e.g. ``(objectclass=groupOfNames)``). This
+  will overwrite the default set by ``item.directory_type``.
+
+``group_member``
+  Optional. Group member attribute name (e.g. ``member``).
+
+``group_scope``
+  Optional. Group search scope. Allowed values are ``sub`` (search whole
+  subtree below base DN), ``base`` (search only the entry at the base DN) or
+  ``one`` (search all entries one level below the base DN). Defaults to:
+  ``sub``.
+
+``id``
+  Optional. Connection identifier. Defaults to ``default``.
+
+``lower_user_ids``
+  Optional. Set lower case user IDs. Allowed values are ``True`` or ``False``.
+  Defaults to: ``False``
+
+``no_persistent``
+  Optional. Don't use persistent LDAP connections. Allowed values are ``True``
+  or ``False``. Defaults to: ``False``
+
+``port``
+  Optional. TCP port. Defaults to: ``389``
+
+``response_timeout``
+  Optional. Response timeout.
+
+``suffix``
+  Optional. LDAP connection suffix.
+
+``use_ssl``
+  Optional. Encrypt the network connection using SSL. Allowed values are
+  ``True`` or ``False``. Defaults to: ``False``
+
+``user_filter``
+  Optional. User search filter (e.g. ``(objectclass=account)``). This
+  will overwrite the default set by ``item.directory_type``.
+
+``user_filter_group``
+  Optional. Filter users by group.
+
+``user_id``
+  Optional. User ID attribute name (e.g. ``uid``).
+
+``user_id_umlauts``
+  Optional. Translate Umlauts in user IDs (deprecated). Allowed values are
+  ``keep`` or ``replace``. Defaults to ``keep``.
+
+``user_scope``
+  Optional. User search scope. Allowed values are ``sub`` (search whole
+  subtree below base DN), ``base`` (search only the entry at the base DN) or
+  ``one`` (search all entries one level below the base DN). Defaults to:
+  ``sub``.
+
+
+.. _checkmk_server__multisite_ldap_plugins:
+
+LDAP Attribute Synchronization Plugins
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The LDAP user synchronization connector supports various plugins for setting
+WATO user properties based on LDAP attributes and filters. Each plugin is
+a configuration dictionary with the plugin name as key.
+
+``alias``
+  Set user alias based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to sync. Defaults to ``cn``.
+
+``auth_expire``
+  Checks wether or not the user auth must be invalidated.
+
+  ``attr``
+    Optional. LDAP attribute to be used as indicator. Defaults to
+    ``krbpasswordexpiration``.
+
+``disable_notifications``
+  Disable notifications based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to sync.
+
+``email``
+  Set email address based on LDAP attribute.
+
+  ``attr``
+  Optional. LDAP attribute to sync. Default to ``mail``.
+
+``force_authuser``
+  Set visibility of host/services based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to sync.
+
+``force_authuser_webservice``
+  Set visibility of host/services for WebAPI access based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to sync.
+
+``groups_to_attributes``
+  Set custom user attributes based on the group memberships in LDAP.
+
+  ``nested``
+    Optional. Handle nested group memberships (Active Directory only at the
+    moment)
+
+  ``other_connections``
+    Optional. List of alternative LDAP connection IDs to sync group membership.
+
+``groups_to_contactgroups``
+  Add the user to contactgroups based on the group memberships in LDAP.
+
+  ``nested``
+    Optional. Handle nested group memberships (Active Directory only at the
+    moment)
+
+  ``other_connections``
+    Optional. List of alternative LDAP connection IDs to sync contactgroup
+    membership.
+
+``groups_to_roles``
+  Set user roles based on distinguished names from LDAP. This is a
+  configuration dictionary with the role name defined in
+  :envvar:`checkmk_server__multisite_roles` as key and a list of group
+  references as value. Each group reference supports the following properties.
+
+  ``group_dn``
+    Group DN used for role assignment.
+
+  ``connection``
+    Optional. Alternative connection ID used for group query.
+
+``pager``
+  Set pager number based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to be used as indicator. Defaults to ``mobile``.
+
+``start_url``
+  Set WATO start URL based on LDAP attribute.
+
+  ``attr``
+    Optional. LDAP attribute to sync. Defaults to ``start_url``.
+
+
+.. _checkmk_server__multisite_user_connections_example:
+
+Example
+~~~~~~~
+
+Small example configuration for user authentication via LDAP showing the use
+of some LDAP plugins::
+
+    checkmk_server__multisite_user_connections:
+      - server: 'localhost'
+        binddn: 'cn=admin,dc=example,dc=com'
+        bindpw: 'secret'
+        group_dn: 'ou=groups,dc=example,dc=com'
+        user_dn: 'ou=users,dc=example,dc=com'
+        user_filter: '(objectclass=posixAccount)'
+        active_plugins:
+          alias:
+            attr: 'gecos'
+          groups_to_roles:
+            admin:
+              - group_dn: 'cn=wato-admin,ou=groups,dc=example,dc=com'
+
+This will synchronize all users in from the DN ``ou=users,dc=example,dc=com``
+to WATO, fills the user's alias property with the value from the ``gecos``
+LDAP attribute and assign the admin role to the members of the 'wato-admin'
+group.
