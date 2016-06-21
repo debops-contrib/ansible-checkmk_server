@@ -1,0 +1,26 @@
+Author: Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+Date:   Tue Jun 21 06:35:33 2016 +0200
+
+    Read rewrite port from X-Forwarded-Port header
+
+    In some situations using %{SERVER_PORT} doesn't properly
+    work. Especially when using a HTTPS reverse proxy for
+    accessing the site. Consider a 'X-Forwarded-Port' header
+    as indication how to properly rewrite the URL.
+
+--- /omd/versions/1.2.8.cre/skel/etc/apache/conf.d/omd.conf.orig  2016-06-21 06:32:04.067171120 +0200
++++ /omd/versions/1.2.8.cre/skel/etc/apache/conf.d/omd.conf       2016-06-21 06:33:41.313171120 +0200
+@@ -12,7 +12,12 @@
+ RewriteCond %{HTTPS} =on
+ RewriteRule ^/###SITE###/?$ - [env=proto:https]
+ 
+-RewriteRule ^/###SITE###/?$ %{ENV:proto}://%{SERVER_NAME}:%{SERVER_PORT}/###SITE###/omd/ [R=302]
++SetEnv port %{SERVER_PORT}e
++
++RewriteCond %{HTTP:X-Forwarded-Port} >1
++RewriteRule ^/###SITE###/?$ - [env=port:%{HTTP:X-Forwarded-Port}]
++
++RewriteRule ^/###SITE###/?$ %{ENV:proto}://%{SERVER_NAME}:%{ENV:port}/###SITE###/omd/ [R=302]
+ 
+ # Keep original redirect as fallback, rewrite rules do no work in shared apache mode
+ RedirectMatch ^/###SITE###$  /###SITE###/omd/
