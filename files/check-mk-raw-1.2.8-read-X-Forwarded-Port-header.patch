@@ -1,26 +1,34 @@
 Author: Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
-Date:   Tue Jun 21 06:35:33 2016 +0200
+Date:   Wed Jun 22 04:38:21 2016 +0200
 
-    Read rewrite port from X-Forwarded-Port header
+    Read rewrite port from X-Forwarded-Port header (v2)
 
     In some situations using %{SERVER_PORT} doesn't properly
     work. Especially when using a HTTPS reverse proxy for
     accessing the site. Consider a 'X-Forwarded-Port' header
     as indication how to properly rewrite the URL.
 
+    v2: - Fix default port assignment
+        - Also fix RedirectMatch when site URL is called
+          without trailing /
+
 --- /omd/versions/1.2.8.cre/skel/etc/apache/conf.d/omd.conf.orig  2016-06-21 06:32:04.067171120 +0200
-+++ /omd/versions/1.2.8.cre/skel/etc/apache/conf.d/omd.conf       2016-06-21 06:33:41.313171120 +0200
-@@ -12,7 +12,12 @@
++++ /omd/versions/1.2.8.cre/skel/etc/apache/conf.d/omd.conf       2016-06-22 04:32:27.580578035 +0200
+@@ -12,11 +12,13 @@
  RewriteCond %{HTTPS} =on
  RewriteRule ^/###SITE###/?$ - [env=proto:https]
  
 -RewriteRule ^/###SITE###/?$ %{ENV:proto}://%{SERVER_NAME}:%{SERVER_PORT}/###SITE###/omd/ [R=302]
-+SetEnv port %{SERVER_PORT}e
-+
++SetEnv port %{SERVER_PORT}
+ 
+-# Keep original redirect as fallback, rewrite rules do no work in shared apache mode
+-RedirectMatch ^/###SITE###$  /###SITE###/omd/
+-RedirectMatch ^/###SITE###/$ /###SITE###/omd/
 +RewriteCond %{HTTP:X-Forwarded-Port} >1
 +RewriteRule ^/###SITE###/?$ - [env=port:%{HTTP:X-Forwarded-Port}]
 +
 +RewriteRule ^/###SITE###/?$ %{ENV:proto}://%{SERVER_NAME}:%{ENV:port}/###SITE###/omd/ [R=302]
++RedirectMatch ^/###SITE###$ %{ENV:proto}://%{SERVER_NAME}:%{ENV:port}/###SITE###/omd/
  
- # Keep original redirect as fallback, rewrite rules do no work in shared apache mode
- RedirectMatch ^/###SITE###$  /###SITE###/omd/
+ <Directory "###ROOT###/share/omd/htdocs">
+ 
