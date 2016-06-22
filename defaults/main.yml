@@ -31,7 +31,7 @@ checkmk_server__site_update: False
 checkmk_server__patches:
   - patch: 'check-mk-raw-1.2.8-set-https-proxy-header.patch'
     file: '/omd/versions/{{ checkmk_server__version_label }}/skel/etc/apache/apache-own.conf'
-  - patch: 'check-mk-raw-1.2.8-read-X-Forwarded-Port-header.patch'
+  - patch: 'check-mk-raw-1.2.8p4-read-X-Forwarded-Port-header.patch'
     file: '/omd/versions/{{ checkmk_server__version_label }}/skel/etc/apache/conf.d/omd.conf'
 
 
