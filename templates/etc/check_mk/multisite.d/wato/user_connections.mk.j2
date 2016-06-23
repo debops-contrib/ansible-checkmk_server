@@ -50,7 +50,7 @@ user_connections = \
      replace("'None'", "None") |
      regex_replace("([ :,\[][ \[\{])u'", "\\1'") |
      regex_replace(": [u]?\"", ": (u") | replace("\",", "),") |
-     regex_replace("\[\"'", "[(u'") | replace("\"]", ")]") |
+     regex_replace("\[[u]?\"'", "[(u'") | replace("\"]", ")]") |
      regex_replace("'(comment|description|group_dn|suffix|user_dn|user_filter_group)': '", "'\\1': u'") }}
 {% endif %}
 
