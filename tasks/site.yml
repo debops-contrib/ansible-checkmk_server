@@ -175,7 +175,7 @@
     owner: '{{ checkmk_server__user }}'
     group: '{{ checkmk_server__group }}'
     mode: '{{ "0660"
-              if item | basename | replace(".j2", "") in [ "hosttags.mk", "users.mk" ]
+              if item | basename | replace(".j2", "") in [ "hosttags.mk", "users.mk", "user_connections.mk" ]
               else "0644" }}'
   with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]

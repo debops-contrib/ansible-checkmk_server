@@ -11,3 +11,7 @@ checkmk_server__site_home: '/opt/omd/sites/{{ checkmk_server__site }}'
 
 # Ansible user properties which are not set in the users.mk
 checkmk_server__ansible_user_properties: [ 'password' ]
+
+# Ansible user_connections properties which are not set in the
+# user_connections.mk
+checkmk_server__ansible_user_connections_properties: [ 'binddn', 'bindpw' ]
