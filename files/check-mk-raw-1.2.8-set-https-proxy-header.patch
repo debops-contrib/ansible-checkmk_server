@@ -1,0 +1,29 @@
+Author: Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+Date:   Tue Jun 21 06:51:23 2016 +0200
+
+    Set X-Forwarded headers when accessed via HTTPS
+
+    The Apache httpd of the OMD site uses various
+    rewrites for accessing the individual applications.
+    Define the necessary headers so this can work
+    properly when the proxy httpd is configured for
+    HTTPS.
+
+    Note: If the HTTP(S) port is not 80(443) this won't
+    work correctly. Attempts to use the httpd variable
+    %{SERVER_PORT} in in the X-Forwarded-Port header
+    failed because it seemed to be undefined "(null)".
+
+--- /omd/versions/default/skel/etc/apache/apache-own.conf.orig  2016-05-13 19:19:07.000000000 +0200
++++ /omd/versions/default/skel/etc/apache/apache-own.conf       2016-06-21 06:50:03.169171120 +0200
+@@ -11,6 +11,10 @@
+   ProxyRequests Off
+   ProxyPreserveHost On
+ 
++  # Indicate when the site was accessed via HTTPS
++  RequestHeader set X-Forwarded-Proto https env=HTTPS
++  RequestHeader set X-Forwarded-Port 443 env=HTTPS
++
+   # Include file created by 'omd config', which 
+   # sets the TCP port of the site local webserver
+   Include ###ROOT###/etc/apache/proxy-port.conf
