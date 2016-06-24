@@ -35,14 +35,6 @@ checkmk_server__patches:
     file: '/omd/versions/{{ checkmk_server__version_label }}/skel/etc/apache/conf.d/omd.conf'
 
 
-# .. envvar:: checkmk_server__dependencies
-#
-# Enable execution of ``debops.checkmk_server`` role dependencies. This
-# variable can be used in playbooks to disable hardcoded dependencies during
-# transition to playbook-based ones.
-checkmk_server__dependencies: True
-
-
 # .. envvar:: checkmk_server__ferm_dependent_rules
 #
 # Firewall configuration using the ``debops.ferm`` Ansible role.
