@@ -15,3 +15,8 @@ checkmk_server__ansible_user_properties: [ 'password' ]
 # Ansible user_connections properties which are not set in the
 # user_connections.mk
 checkmk_server__ansible_user_connections_properties: [ 'binddn', 'bindpw' ]
+
+# User properties used for contact definition
+checkmk_server__contact_properties: [ 'alias', 'contactgroup', 'disable_notifications',
+  'email', 'host_notification_options', 'notification_method', 'notification_period',
+  'notifications_enabled', 'pager', 'service_notifications_options' ]

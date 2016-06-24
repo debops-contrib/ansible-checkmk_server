@@ -1,0 +1,50 @@
+{#
+ # This template merges the contacts read from the original contacts.mk
+ # with the users properties defined in the Ansible inventory
+ # ``checkmk_server__multisite_users``. The merge is necessary as contact
+ # settings of users synchronized from remote directories such as LDAP or
+ # Active Directory are written to contacts.mk by Check_MK's UserDB module
+ # and obviously shouldn't be removed by Ansible.
+ #
+ # The ``contacts.update()`` definition in contacts.mk takes a regular
+ # Python dictionary serialized via pprint().
+ #
+ # The template tries to imitate the original file formatting to avoid
+ # rewriting contacts.mk in case of file modifications through Check_MK.
+ #
+ #}
+{% for _user in checkmk_server__multisite_users|d({})|list %}
+{#
+ # Get contact properties from multisite user definitions
+ #}
+{%   set _user_properties = {} %}
+{%   for _key in checkmk_server__contact_properties|d([]) %}
+{%     if _key in checkmk_server__multisite_users[_user]|d({}) %}
+{%       set _ = _user_properties.update({_key: checkmk_server__multisite_users[_user][_key]}) %}
+{%     endif %}
+{%   endfor %}
+{%   set _ = checkmk_server__multisite_users.update({_user: _user_properties}) %}
+{#
+ # Make sure default arguments are defined
+ #}
+{%   for _key, _value in (checkmk_server__contact_defaults|d({})).iteritems() %}
+{%     if _user not in checkmk_server__fact_local_contacts|d({}) and _key not in checkmk_server__multisite_users[_user]|d({}) %}
+{%       set _ = checkmk_server__multisite_users[_user].update({_key: _value}) %}
+{%     endif %}
+{%   endfor %}
+{% endfor %}
+{#
+ # Combine fact contacts with multisite users
+ #}
+{% set _contacts = checkmk_server__fact_local_contacts|d({}) | combine(checkmk_server__multisite_users|d({}), recursive=True) %}
+# Written by Multisite UserDB
+# encoding: utf-8
+
+contacts.update(
+{#
+ # Pretty print dictionary and adapt unicode string hinting
+ #}
+{{ _contacts | pprint |
+   regex_replace("(: )u'", "\\1'") |
+   regex_replace("'(alias|email)': '", "'\\1': u'") }}
+)

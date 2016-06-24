@@ -55,11 +55,6 @@ properties can be set via Ansible inventory:
 ``alias``
   Full name, required.
 
-``password``
-  Optional. Set given password in Apache :file:`htpasswd` file. Can be used
-  for form-based authentication in WATO and HTTP basic authentication in
-  Icinga, PNP4Nagios and NagVis.
-
 ``automation_secret``
   Optional. Automation secret for machine accounts. Set this instead of
   ``item.password`` if the account is used for authentication of `WebAPI`_
@@ -67,12 +62,15 @@ properties can be set via Ansible inventory:
 
 .. _WebAPI: https://mathias-kettner.com/checkmk_wato_webapi.html
 
-``locked``
-  Optional. Disable login to this account. Defaults to ``False``.
+``contactgroups``
+  Optional. List of contact groups the user is a member of. Defaults to ``[]``.
 
-``roles``
-  Optional. List of permission roles defined in
-  :envvar:`checkmk_server__multisite_roles`. Defaults to ``[ 'user' ]``.
+``disable_notifications``
+  Optional. Temporarily disable all notifications for this user. Defaults to
+  ``False``.
+
+``email``
+  Optional. Email address.
 
 ``force_authuser``
   Optional. Only show hosts and services the user is a contact for. Defaults
@@ -81,6 +79,54 @@ properties can be set via Ansible inventory:
 ``force_authuser_webservice``
   Optional. Export only hosts and services the user is a contact for.
   Defaults to ``False``.
+
+``host_notification_options``
+  Optional. Host events which should be notified. String combined of the
+  following letters:
+  ``d``: Host goes down
+  ``u``: Host get unreachable
+  ``r``: Host goes up again
+  ``f``: Start or end of flapping state
+  ``s``: Start or end of a scheduled downtime
+  Defaults to ``durfs``.
+
+``locked``
+  Optional. Disable login to this account. Defaults to ``False``.
+
+``notification_method``
+  Optional. Event notification method. Defaults to ``email`` (currently only
+  supported method).
+
+``notification_period``
+  Optional. Notification time period. Default to ``24x7`` (currently only
+  supported period).
+
+``notifications_enabled``
+  Optional. Generally enable notifications for this user. Defaults to
+  ``False``.
+
+``pager``
+  Optional. Pager address.
+
+``password``
+  Optional. Set given password in Apache :file:`htpasswd` file. Can be used
+  for form-based authentication in WATO and HTTP basic authentication in
+  Icinga, PNP4Nagios and NagVis.
+
+``roles``
+  Optional. List of permission roles defined in
+  :envvar:`checkmk_server__multisite_roles`. Defaults to ``[ 'user' ]``.
+
+``service_notification_options``
+  Optional. Service events which should be notified. String combined of the
+  following letters:
+  ``w``: Service goes into warning state
+  ``u``: Service goes into unknown state
+  ``c``: Service goes into critical state
+  ``r``: Service recovers to OK
+  ``f``: Start or end of flapping state
+  ``s``: Start or end of a scheduled downtime
+  Defaults to ``wucrfs``.
 
 ``start_url``
   Optional. Start URL to display in main frame. Defaults to ``dashboard.py``.

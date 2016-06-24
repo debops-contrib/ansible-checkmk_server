@@ -235,6 +235,23 @@ checkmk_server__multisite_user_defaults:
   start_url: 'dashboard.py'
 
 
+# .. envvar:: checkmk_server__contact_defaults
+#
+# Default contact properties. For a list of valid contact properties
+# see `checkmk_server__contact_properties` defined in :file:`vars/main.yml`.
+# They are described under :envvar:`checkmk_server__multisite_users`.
+checkmk_server__contact_defaults:
+  contactgroups: []
+  disable_notifications: False
+  email: ''
+  host_notification_options: 'durfs'
+  notification_method: 'email'
+  notification_period: '24X7'
+  notifications_enabled: False
+  pager: ''
+  service_notification_options: 'wucrfs'
+
+
 # .. envvar:: checkmk_server__multisite_user_connections
 #
 # LDAP user synchronization connection settings. See
