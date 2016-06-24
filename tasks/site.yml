@@ -144,7 +144,7 @@
 
 - name: Read local multisite users definition
   command: 'sed -e "1,/^multisite_users\s*=/d" {{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
-  register: checkmk_server_register_users_mk
+  register: checkmk_server__register_users_mk
   changed_when: False
   always_run: True
   tags: [ 'role::checkmk_server:multisite' ]
@@ -158,7 +158,7 @@
 
 - name: Set local Check_MK configuration facts
   set_fact:
-    checkmk_server_fact_local_users: '{{ checkmk_server_register_users_mk.stdout }}'
+    checkmk_server__fact_local_users: '{{ checkmk_server__register_users_mk.stdout }}'
     checkmk_server__fact_local_contacts: '{{ checkmk_server__register_contacts_mk.stdout }}'
   always_run: True
   tags: [ 'role::checkmk_server:multisite' ]
