@@ -10,3 +10,11 @@ a powerful configuration language for creating check inventories.
 .. _Check_MK: http://mathias-kettner.com/check_mk.html
 .. _Nagios: https://www.nagios.org/
 .. _Icinga: https://www.icinga.org/
+
+
+Installation
+~~~~~~~~~~~~
+
+This role requires at least Ansible ``v2.0``. To install it, run::
+
+    ansible-galaxy install debops-contrib.checkmk_server

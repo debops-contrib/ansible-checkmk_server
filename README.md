@@ -35,13 +35,6 @@ into your playbook.
 [Try DebOps now](https://github.com/debops/debops) for a complete solution to run your Debian-based infrastructure.
 
 
-### Role dependencies
-
-- `debops.ferm`
-
-
-
-
 ### Authors and license
 
 `checkmk_server` role was written by:

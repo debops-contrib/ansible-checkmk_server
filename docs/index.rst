@@ -5,7 +5,6 @@ Ansible role: debops.checkmk_server
    :maxdepth: 2
 
    introduction
-   installation
    getting-started
    defaults
    defaults-configuration
