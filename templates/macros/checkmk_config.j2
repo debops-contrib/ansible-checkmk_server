@@ -1,24 +1,27 @@
-{% macro checkmk_config(filename, wato, config_map) %}
-{% if config_map %}
-{%   for entry in config_map %}
-{%     if entry['filename'] == filename and entry['wato'] == wato %}
-{%       set checkmk_server__rule_state = 'present' %}
-{%       if 'rule_state' in entry %}
-{%         set checkmk_server__rule_state = entry['rule_state'] %}
+{% macro checkmk_config(_filename, _wato, _config_map) %}
+{% if _config_map|d([]) | list %}
+{%   for _entry in _config_map %}
+{%     if (_entry.filename|d("") == _filename) and (_entry.wato|d(True) == _wato|bool) %}
+{%       set _state = 'present' %}
+{%       if 'rule_state' in _entry %}
+{%         set _state = _entry.rule_state %}
 {%       endif %}
-{%       if checkmk_server__rule_state == 'present' %}
-{%         if entry['template'] == 'key_value' %}
-{{ key_value(entry['name'], entry['value']) }}
-{%         elif entry['template'] == 'tuple_list' %}
-{{ tuple_list(entry['name'], entry['value']) }}
-{%         elif entry['template'] == 'rule' %}
-{{ rule(entry['name'], entry['value'], entry['tags'], entry['description']) }}
-{%         elif entry['template'] == 'active_check' %}
-{{ active_check(entry['name'], entry['filter'], entry['comment']) }}
-{%         elif entry['template'] == 'nested_tuplelist_list' %}
-{{ nested_tuplelist_list(entry['name'], entry['value']) }}
-{%         elif entry['template'] == 'custom' %}
-{{ custom(entry['content']) }}
+{%       if _state == 'present' %}
+{%         set _template = _entry.template|d("custom") %}
+{%         if _template == 'key_value' %}
+{{ key_value(_entry.name, _entry.value) }}
+{%         elif _template == 'dict_element' %}
+{{ dict_element(_entry.name, _entry.value) }}
+{%         elif _template == 'tuple_list' %}
+{{ tuple_list(_entry.name, _entry.value) }}
+{%         elif _template == 'rule' %}
+{{ rule(_entry.name, _entry.value, _entry.tags, _entry.description) }}
+{%         elif _template == 'active_check' %}
+{{ active_check(_entry.name, _entry.filter, _entry.comment) }}
+{%         elif _template == 'nested_tuplelist_list' %}
+{{ nested_tuplelist_list(_entry.name, _entry.value) }}
+{%         elif _template == 'custom' %}
+{{ custom(_entry.content) }}
 {%         endif %}
 {%       endif %}
 {%     endif %}
@@ -34,6 +37,20 @@
 {% macro key_value(name, value) %}
 
 {{ name }} = {{ value }}
+{% endmacro %}
+
+
+{#
+ # The dict_element() macro will generate configuration statement for updating
+ # a Python dictionary. Likely to avoid collision with older variables, it
+ # includes a check for the object type and conditional re-initialization.
+ #}
+
+{% macro dict_element(name, value) %}
+
+if type({{ name }}) != dict:
+    {{ name }} = {}
+{{ name }}.update({{ value | pprint }})
 {% endmacro %}
 
 
