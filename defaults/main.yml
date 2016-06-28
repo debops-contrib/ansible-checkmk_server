@@ -227,23 +227,6 @@ checkmk_server__multisite_user_defaults:
   start_url: 'dashboard.py'
 
 
-# .. envvar:: checkmk_server__contact_defaults
-#
-# Default contact properties. For a list of valid contact properties
-# see `checkmk_server__contact_properties` defined in :file:`vars/main.yml`.
-# They are described under :envvar:`checkmk_server__multisite_users`.
-checkmk_server__contact_defaults:
-  contactgroups: []
-  disable_notifications: False
-  email: ''
-  host_notification_options: 'durfs'
-  notification_method: 'email'
-  notification_period: '24X7'
-  notifications_enabled: False
-  pager: ''
-  service_notification_options: 'wucrfs'
-
-
 # .. envvar:: checkmk_server__multisite_user_connections
 #
 # LDAP user synchronization connection settings. See
@@ -287,9 +270,39 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 #
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
-checkmk_server__site_config_map: '{{ checkmk_server__datasource_programs +
+checkmk_server__site_config_map: '{{ checkmk_server__default_contactgroups +
+                                     checkmk_server__datasource_programs +
                                      checkmk_server__if_inventory_uses_description +
                                      checkmk_server__rules_software_inventory }}'
+
+
+# .. envvar:: checkmk_server__contact_defaults
+#
+# Default contact properties. For a list of valid contact properties
+# see `checkmk_server__contact_properties` defined in :file:`vars/main.yml`.
+# They are described under :envvar:`checkmk_server__multisite_users`.
+checkmk_server__contact_defaults:
+  contactgroups: []
+  disable_notifications: False
+  email: ''
+  host_notification_options: 'durfs'
+  notification_method: 'email'
+  notification_period: '24X7'
+  notifications_enabled: False
+  pager: ''
+  service_notification_options: 'wucrfs'
+
+
+# .. envvar:: checkmk_server__default_contactgroups
+#
+# Default upstream contactgroups
+checkmk_server__default_contactgroups:
+  - name: 'define_contactgroups'
+    filename: 'groups.mk'
+    template: 'dict_element'
+    value:
+      all: 'Everybody'
+    wato: True
 
 
 # .. envvar:: checkmk_server__datasource_programs
