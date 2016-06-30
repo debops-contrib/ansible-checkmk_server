@@ -128,15 +128,6 @@
   register: checkmk_server_register_ssh_pubkey
   when: checkmk_server__sshkeys|d()
 
-- name: Generate multisite permission roles definition
-  template:
-    src: 'etc/check_mk/multisite.d/wato/roles.mk.j2'
-    dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/roles.mk'
-    owner: '{{ checkmk_server__user }}'
-    group: '{{ checkmk_server__group }}'
-    mode: '0644'
-  tags: [ 'role::checkmk_server:multisite' ]
-
 - name: Wait for the site to be started
   wait_for:
     path: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
