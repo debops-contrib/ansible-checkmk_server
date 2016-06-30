@@ -134,8 +134,6 @@ checkmk_server__multisite_config_map: '{{ checkmk_server__wato_host_tags +
 # additional ``cmk-agent-ssh`` tag to indicate SSH-based Check_MK agents.
 checkmk_server__wato_host_tags:
   - name: 'wato_host_tags'
-    filename: 'hosttags.mk'
-    template: 'nested_tuplelist_list'
     value:
       - 'agent':
           'Agent type':
@@ -169,19 +167,16 @@ checkmk_server__wato_host_tags:
                 'WAN (high latency)': []
             - 'dmz':
                 'DMZ (low latency, secure access)': []
-    wato: True
+
 
 # .. envvar:: checkmk_server__wato_aux_tags
 #
 # Define the default upstream ``wato_aux_tags`` configuration.
 checkmk_server__wato_aux_tags:
   - name: 'wato_aux_tags'
-    filename: 'hosttags.mk'
-    template: 'tuple_list'
     value:
       - 'snmp': 'monitor via SNMP'
       - 'tcp': 'monitor via Check_MK Agent'
-    wato: True
 
 
 # .. envvar:: checkmk_server__multisite_roles
@@ -298,11 +293,8 @@ checkmk_server__contact_defaults:
 # Default upstream contactgroups
 checkmk_server__default_contactgroups:
   - name: 'define_contactgroups'
-    filename: 'groups.mk'
-    template: 'dict_element'
     value:
       all: 'Everybody'
-    wato: True
 
 
 # .. envvar:: checkmk_server__datasource_programs
@@ -310,12 +302,9 @@ checkmk_server__default_contactgroups:
 # Define additional ``datasource_programs`` for agent access via SSH.
 checkmk_server__datasource_programs:
   - name: 'datasource_programs'
-    filename: 'rules.mk'
-    template: 'rule'
     value: 'ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s -l root <IP> /usr/bin/check_mk_agent'
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
-    wato: True
 
 
 # .. envvar:: checkmk_server__software_inventory_rules:
@@ -324,16 +313,10 @@ checkmk_server__datasource_programs:
 # enabled/disabled by setting :envvar:`checkmk_server__software_inventory`.
 checkmk_server__rules_software_inventory:
   - name: 'inventory_check_interval'
-    filename: 'global.mk'
-    wato: True
-    template: 'key_value'
     value: 1440
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
   - name: 'cmk_inv'
-    filename: 'rules.mk'
-    wato: True
-    template: 'active_check'
     filter: 'ALL_HOSTS'
     comment: 'Enable collection of hardware/software information'
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool

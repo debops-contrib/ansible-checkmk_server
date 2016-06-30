@@ -19,6 +19,40 @@ checkmk_server__contact_properties: [ 'alias', 'contactgroup',
   'notification_method', 'notification_period', 'notifications_enabled',
   'pager', 'service_notifications_options' ]
 
+# Mapping of variable names to files and templates
+checkmk_server__variable_map: '{{ checkmk_server__confd_variable_map |
+  combine(checkmk_server__multisite_variable_map, recursive=True) }}'
+
+# Configuration variable definitions for Check_MK conf.d definitions
+checkmk_server__confd_variable_map:
+  cmk_inv:
+    filename: 'rules.mk'
+    template: 'active_check'
+  datasource_programs:
+    filename: 'rules.mk'
+    template: 'rule'
+  define_contactgroups:
+    filename: 'groups.mk'
+    template: 'dict_update_legacy'
+  inventory_check_interval:
+    filename: 'global.mk'
+    template: 'key-value'
+
+# Configuration varaible definitions for Check_MK multisite definitions
+checkmk_server__multisite_variable_map:
+  roles:
+    filename: 'roles.mk'
+    template: 'dict_update'
+  wato_aux_tags:
+    filename: 'hosttags.mk'
+    template: 'tuple_list'
+  wato_host_tags:
+    filename: 'hosttags.mk'
+    template: 'nested_tuple_list'
+  wato_use_git:
+    filename: 'global.mk'
+    template: 'key_value'
+
 # Ansible user_connections properties which are not set in the
 # user_connections.mk
 checkmk_server__ansible_user_connections_properties: [ 'binddn', 'bindpw' ]
