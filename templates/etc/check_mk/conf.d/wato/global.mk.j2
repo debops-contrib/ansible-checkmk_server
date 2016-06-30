@@ -1,12 +1,12 @@
-# {{ ansible_managed }}
 {#
-
-This file provides the default global configuration as shipped with upstream
-Check_MK. It can be extended by custom rule definitions in the Ansible
-inventory.
-
-#}
+ #
+ # This file provides the default global configuration as shipped with upstream
+ # Check_MK. It can be extended by custom rule definitions in the Ansible
+ # inventory.
+ #
+ #}
 {% import 'checkmk_config.j2' as macros with context %}
+# {{ ansible_managed }}
 # encoding: utf-8
 
 use_new_descriptions_for = ['df',
@@ -42,5 +42,4 @@ use_new_descriptions_for = ['df',
  'innovaphone_temp',
  'enterasys_temp']
 enable_rulebased_notifications = True
-
-{{ macros.checkmk_config('global.mk', True, checkmk_server__site_config_map|d([])) }}
+{{ macros.tmpl_set_config('global.mk', True, checkmk_server__site_config_map|d([])) }}

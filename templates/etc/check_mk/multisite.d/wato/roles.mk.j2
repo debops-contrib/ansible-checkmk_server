@@ -1,6 +1,4 @@
+{% import 'checkmk_config.j2' as macros with context %}
 # {{ ansible_managed }}
 # encoding: utf-8
-
-roles.update(
-{ {% for role, params in checkmk_server__multisite_roles|dictsort %}'{{ role }}': {{ params | replace("u'", "'") }}{% if not loop.last %},
-  {% endif %}{% endfor %} })
+{{ macros.tmpl_set_config('roles.mk', True, checkmk_server__multisite_config_map|d([])) }}

@@ -1,108 +1,150 @@
-{% macro checkmk_config(_filename, _wato, _config_map) %}
-{% if _config_map|d([]) | list %}
-{%   for _entry in _config_map %}
-{%     if (_entry.filename|d("") == _filename) and (_entry.wato|d(True) == _wato|bool) %}
+{#
+ # The tmpl_set_config() macro will iterate through the given list of config
+ # dictionaries and generate the Check_MK configuration values if they belong
+ # to the given file name.
+ #}
+
+{% macro tmpl_set_config(_tmpl_file, _wato, _config) %}
+{%   for _entry in _config %}
+{%     if 'filename' in _entry %}
+{%       set _cfg_file = _entry.filename %}
+{%     else %}
+{%       set _cfg_file = checkmk_server__variable_map[_entry.name|d("undefined name")].filename %}
+{%     endif %}
+{%     if (_cfg_file == _tmpl_file) and (_entry.wato|d(True) == _wato|bool) %}
 {%       set _state = 'present' %}
 {%       if 'rule_state' in _entry %}
 {%         set _state = _entry.rule_state %}
 {%       endif %}
 {%       if _state == 'present' %}
-{%         set _template = _entry.template|d("custom") %}
-{%         if _template == 'key_value' %}
-{{ key_value(_entry.name, _entry.value) }}
-{%         elif _template == 'dict_element' %}
-{{ dict_element(_entry.name, _entry.value) }}
-{%         elif _template == 'tuple_list' %}
-{{ tuple_list(_entry.name, _entry.value) }}
-{%         elif _template == 'rule' %}
-{{ rule(_entry.name, _entry.value, _entry.tags, _entry.description) }}
-{%         elif _template == 'active_check' %}
-{{ active_check(_entry.name, _entry.filter, _entry.comment) }}
-{%         elif _template == 'nested_tuplelist_list' %}
-{{ nested_tuplelist_list(_entry.name, _entry.value) }}
-{%         elif _template == 'custom' %}
-{{ custom(_entry.content) }}
-{%         endif %}
-{%       endif %}
+{{         tmpl_var_define(_entry) }}{%
+         endif %}
 {%     endif %}
 {%   endfor %}
-{% endif %}
 {% endmacro %}
 
 
 {#
- # The key_value() macro will generate simple key/value variable definitions
+ # The tpl_var_define() macro will call the appropriate variable formatting
+ # macro for the given configuration entry.
  #}
 
-{% macro key_value(name, value) %}
-
-{{ name }} = {{ value }}
+{% macro tmpl_var_define(_cfg_entry) %}
+{%   if 'template' in _cfg_entry %}
+{%     set _template = _cfg_entry.template %}
+{%   elif checkmk_server__variable_map[_cfg_entry.name|d("undefined name")].template|d() %}
+{%     set _template = checkmk_server__variable_map[_cfg_entry.name].template %}
+{%   else %}
+{%     set _template = 'custom' %}
+{%   endif %}
+{%   if _template == 'key_value' %}
+{{     tmpl_var__key_value(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+     elif _template == 'dict_update' %}
+{{     tmpl_var__dict_update(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+     elif _template == 'dict_update_legacy' %}
+{{     tmpl_var__dict_update_legacy(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+     elif _template == 'tuple_list' %}
+{{     tmpl_var__tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+     elif _template == 'nested_tuple_list' %}
+{{     tmpl_var__nested_tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+     elif _template == 'rule' %}
+{{     tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _cfg_entry.tags|d([]), _cfg_entry.description|d("")) }}{%
+     elif _template == 'active_check' %}
+{{     tmpl_var__active_check(_cfg_entry.name, _cfg_entry.filter, _cfg_entry.comment) }}{%
+     elif _template == 'custom' %}
+{{     tmpl_var__custom(_cfg_entry.content|d("")) }}{%
+     endif %}
 {% endmacro %}
 
 
 {#
- # The dict_element() macro will generate configuration statement for updating
- # a Python dictionary. Likely to avoid collision with older variables, it
- # includes a check for the object type and conditional re-initialization.
+ # The tmpl_var__key_value() macro will generate simple key/value variable
+ # definitions.
  #}
 
-{% macro dict_element(name, value) %}
+{% macro tmpl_var__key_value(_name, _value) %}
 
-if type({{ name }}) != dict:
-    {{ name }} = {}
-{{ name }}.update({{ value | pprint }})
+{{ _name }} = {{ _value }}
 {% endmacro %}
 
 
 {#
- # The tuple_list() macro will generate a variable definition with
+ # The tmpl_var__dict_update_legacy() macro will generate configuration
+ # statement for updating a Python dictionary. Likely to avoid collision
+ # with older variables it includes a check for the object type and conditional
+ # re-initialization.
+ #}
+
+{% macro tmpl_var__dict_update_legacy(_name, _value) %}
+
+if type({{ _name }}) != dict:
+    {{ _name }} = {}
+{{ _name }}.update({{ _value | pprint }})
+{% endmacro %}
+
+
+{#
+ # The tmpl_var__dict_update() macro will generate configuration statement
+ # for updating a Python dictionary.
+ #}
+
+{% macro tmpl_var__dict_update(_name, _value) %}
+
+{{ _name }}.update(
+{{ _value | pprint }})
+{% endmacro %}
+
+
+{#
+ # The tmpl_var__tuple_list() macro will generate a variable definition with
  # list of tuples "[('key', u'value')]" which must be given as a list
  # of key/value pairs.
  #}
 
-{% macro tuple_list(name, elements) %}
+{% macro tmpl_var__tuple_list(_name, _element_list) %}
 
-{{ name }} += \
-[{% for e in elements %}('{{ e.keys()[0] }}', u'{{ e.values()[0] }}'){% if not loop.last %}, {% endif %}{% endfor %}]
+{{ _name }} += \
+[{% for _item in _element_list %}('{{ _item.keys()[0] }}', u'{{ _item.values()[0] }}'){% if not loop.last %}, {% endif %}{% endfor %}]
 {% endmacro %}
 
 
 {#
- # The rule() macro will generate a (yet) very simplified variable definition
- # for a monitoring rule.
+ # The tmpl_var__rule() macro will generate a (yet) very simplified variable
+ # definition for a monitoring rule.
  #}
-{% macro rule(name, value, tags, desc) %}
+{% macro tmpl_var__rule(_name, _value, _tags, _desc) %}
 
-{{ name }} = [
-  ( '{{ value }}', ['{{ tags | join("', '") }}', ], ALL_HOSTS, {'description': u'{{ desc }}'} ),
-] + {{ name }}
+{{ _name }} = [
+  ( '{{ _value }}', ['{{ _tags | join("', '") }}', ], ALL_HOSTS, {'description': u'{{ _desc }}'} ),
+] + {{ _name }}
 {% endmacro %}
 
 
 {#
- # The active_check() macro will generate the necessary active_checks variable
- # definition required to define a regular Nagios active check.
+ # The tmpl_var__active_check() macro will generate the necessary
+ # 'active_checks' dictionary entries required to define a regular
+ # Nagios active check.
  #}
-{% macro active_check(name, filter, comment) %}
+{% macro tmpl_var__active_check(_name, _filter, _comment) %}
 
-active_checks.setdefault('{{ name }}', [])
+active_checks.setdefault('{{ _name }}', [])
 
-active_checks['{{ name }}'] = [
-  ( None, [], {{ filter }}, {'comment': u'{{ comment }}' } ),
+active_checks['{{ _name }}'] = [
+  ( None, [], {{ _filter }}, {'comment': u'{{ _comment }}' } ),
 ]
 {% endmacro %}
 
 
 {#
- # The nested_tuplelist_list() macro will generate a variable definition with
- # a list of 3-element tuples, where the last element can be a list of
- # 3-element tuples.
+ # The tmpl_var__nested_tuple_list() macro will generate a variable
+ # definition with a list of 3-element tuples, where the last element can
+ # be a list of 3-element tuples.
  #}
 
-{% macro nested_tuplelist_list(name, elements) %}
+{% macro tmpl_var__nested_tuple_list(_name, _elements) %}
 
-{{ name }} += \
-[{% for e in elements %}('{{ e.keys()[0] }}',
+{{ _name }} += \
+[{% for e in _elements %}('{{ e.keys()[0] }}',
   u'{{ e.values()[0].keys()[0] }}',
   [{% for i in e.values()[0].values()[0] %}('{{ i.keys()[0] }}', u'{{ i.values()[0].keys()[0] }}', [{% for j in i.values()[0].values()[0] %}'{{ j }}'{% if not loop.last %}, {% endif %}{% endfor %}]){% if not loop.last %},
    {% endif %}{% endfor %}]){% if not loop.last %},
@@ -111,10 +153,10 @@ active_checks['{{ name }}'] = [
 
 
 {#
- # The custom() macro will simply print the given content.
+ # The tmpl_var__custom() macro will simply print the given content.
  #}
 
-{% macro custom(content) %}
+{% macro tmpl_var__custom(_content) %}
 
-{{ content }}
+{{ _content }}
 {% endmacro %}

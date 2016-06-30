@@ -115,7 +115,7 @@ properties can be set via Ansible inventory:
 
 ``roles``
   Optional. List of permission roles defined in
-  :envvar:`checkmk_server__multisite_roles`. Defaults to ``[ 'user' ]``.
+  :envvar:`checkmk_server__multisite_cfg_roles`. Defaults to ``[ 'user' ]``.
 
 ``service_notification_options``
   Optional. Service events which should be notified. String combined of the
@@ -336,7 +336,7 @@ a configuration dictionary with the plugin name as key.
 ``groups_to_roles``
   Set user roles based on distinguished names from LDAP. This is a
   configuration dictionary with the role name defined in
-  :envvar:`checkmk_server__multisite_roles` as key and a list of group
+  :envvar:`checkmk_server__multisite_cfg_roles` as key and a list of group
   references as value. Each group reference supports the following properties.
 
   ``group_dn``
