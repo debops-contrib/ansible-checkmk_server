@@ -36,7 +36,7 @@ checkmk_server__confd_variable_map:
     template: 'dict_update_legacy'
   inventory_check_interval:
     filename: 'global.mk'
-    template: 'key-value'
+    template: 'key_value'
 
 # Configuration varaible definitions for Check_MK multisite definitions
 checkmk_server__multisite_variable_map:
