@@ -280,10 +280,10 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 #
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
-checkmk_server__site_config_map: '{{ checkmk_server__default_contactgroups +
-                                     checkmk_server__datasource_programs +
-                                     checkmk_server__if_inventory_uses_description +
-                                     checkmk_server__rules_software_inventory }}'
+checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
+                                     checkmk_server__site_cfg_datasource_programs +
+                                     checkmk_server__site_cfg_netif_description +
+                                     checkmk_server__site_cfg_software_inventory }}'
 
 
 # .. envvar:: checkmk_server__contact_defaults
@@ -292,7 +292,7 @@ checkmk_server__site_config_map: '{{ checkmk_server__default_contactgroups +
 # see `checkmk_server__contact_properties` defined in :file:`vars/main.yml`.
 # They are described under :envvar:`checkmk_server__multisite_users`.
 checkmk_server__contact_defaults:
-  contactgroups: []
+  contactgroups: [ 'all' ]
   disable_notifications: False
   email: ''
   host_notification_options: 'durfs'
@@ -303,30 +303,30 @@ checkmk_server__contact_defaults:
   service_notification_options: 'wucrfs'
 
 
-# .. envvar:: checkmk_server__default_contactgroups
+# .. envvar:: checkmk_server__site_cfg_contactgroups
 #
-# Default upstream contactgroups
-checkmk_server__default_contactgroups:
+# Define default contact group for all contacts.
+checkmk_server__site_cfg_contactgroups:
   - name: 'define_contactgroups'
     value:
       all: 'Everybody'
 
 
-# .. envvar:: checkmk_server__datasource_programs
+# .. envvar:: checkmk_server__site_cfg_datasource_programs
 #
 # Define additional ``datasource_programs`` for agent access via SSH.
-checkmk_server__datasource_programs:
+checkmk_server__site_cfg_datasource_programs:
   - name: 'datasource_programs'
     value: 'ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s -l root <IP> /usr/bin/check_mk_agent'
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
 
 
-# .. envvar:: checkmk_server__software_inventory_rules:
+# .. envvar:: checkmk_server__site_cfg_software_inventory:
 #
 # Check_MK rules for enabling software inventory check. This check can be
 # enabled/disabled by setting :envvar:`checkmk_server__software_inventory`.
-checkmk_server__rules_software_inventory:
+checkmk_server__site_cfg_software_inventory:
   - name: 'inventory_check_interval'
     value: 1440
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
@@ -338,11 +338,11 @@ checkmk_server__rules_software_inventory:
                     else "absent" }}'
 
 
-# .. envvar:: checkmk_server__if_inventory_uses_description
+# .. envvar:: checkmk_server__site_cfg_netif_description
 #
 # Set interface name instead of index for network interface check via
 # ``if_inventory_uses_description``.
-checkmk_server__if_inventory_uses_description:
+checkmk_server__site_cfg_netif_description:
   - name: 'if_inventory_uses_description'
     filename: 'networking.mk'
     template: 'key_value'
