@@ -124,71 +124,86 @@ checkmk_server__multisite_config_path: 'etc/check_mk/multisite.d'
 #
 # List of dictionaries which will generate the Check_MK multisite
 # configuration in :envvar:`checkmk_server__multisite_config_path`.
-checkmk_server__multisite_config_map: '{{ checkmk_server__wato_host_tags +
-                                          checkmk_server__wato_aux_tags }}'
+checkmk_server__multisite_config_map: '{{ checkmk_server__multisite_cfg_wato_host_tags +
+                                          checkmk_server__multisite_cfg_wato_aux_tags +
+                                          checkmk_server__multisite_cfg_roles }}'
 
 
-# .. envvar:: checkmk_server__wato_host_tags
+# .. envvar:: checkmk_server__multisite_cfg_default_hosttags
 #
-# Define the default upstream ``wato_host_tags`` configuration with
-# additional ``cmk-agent-ssh`` tag to indicate SSH-based Check_MK agents.
-checkmk_server__wato_host_tags:
+# Multisite ``wato_host_tags`` variable definition.
+checkmk_server__multisite_cfg_wato_host_tags:
   - name: 'wato_host_tags'
-    value:
-      - 'agent':
-          'Agent type':
-            - 'cmk-agent':
-                'Check_MK Agent (xinetd)': ['tcp']
-            - 'cmk-agent-ssh':
-                'Check_MK Agent (ssh)': []
-            - 'snmp-only':
-                'SNMP (Networking device, Appliance)': ['snmp']
-            - 'snmp-v1':
-                'Legacy SNMP device (using V1)': ['snmp']
-            - 'snmp-tcp':
-                'Dual: Check_MK Agent + SNMP': ['snmp', 'tcp']
-            - 'ping':
-                'No Agent': []
-      - 'criticality':
-          'Criticality':
-            - 'prod':
-                'Productive system': []
-            - 'critical':
-                'Business critical': []
-            - 'test':
-                'Test system': []
-            - 'offline':
-                'Do not monitor this host': []
-      - 'networking':
-          'Networking Segment':
-            - 'lan':
-                'Local network (low latency)': []
-            - 'wan':
-                'WAN (high latency)': []
-            - 'dmz':
-                'DMZ (low latency, secure access)': []
+    value: '{{ checkmk_server__multisite_default_wato_host_tags }}'
 
 
-# .. envvar:: checkmk_server__wato_aux_tags
+# .. envvar:: checkmk_server__multisite_default_wato_host_tags
 #
-# Define the default upstream ``wato_aux_tags`` configuration.
-checkmk_server__wato_aux_tags:
+# Default upstream host tag configuration with additional ``cmk-agent-ssh`` tag
+# to indicate SSH-based Check_MK agents.
+checkmk_server__multisite_default_wato_host_tags:
+  - agent:
+      'Agent type':
+         - cmk-agent-ssh:
+             'Check_MK Agent (ssh)': []
+         - cmk-agent:
+             'Check_MK Agent (xinetd)': ['tcp']
+         - snmp-only:
+             'SNMP (Networking device, Appliance)': ['snmp']
+         - snmp-v1:
+             'Legacy SNMP device (using V1)': ['snmp']
+         - snmp-tcp:
+             'Dual: Check_MK Agent + SNMP': ['snmp', 'tcp']
+         - ping:
+             'No Agent': []
+  - criticality:
+      'Criticality':
+         - prod:
+             'Productive system': []
+         - critical:
+             'Business critical': []
+         - test:
+             'Test system': []
+         - offline:
+             'Do not monitor this host': []
+  - networking:
+      'Networking Segment':
+         - lan:
+             'Local network (low latency)': []
+         - wan:
+             'WAN (high latency)': []
+         - dmz:
+             'DMZ (low latency, secure access)': []
+
+
+# .. envvar:: checkmk_server__multisite_cfg_wato_aux_tags
+#
+# Multisite ``wato_aux_tags`` variable definition.
+checkmk_server__multisite_cfg_wato_aux_tags:
   - name: 'wato_aux_tags'
-    value:
-      - 'snmp': 'monitor via SNMP'
-      - 'tcp': 'monitor via Check_MK Agent'
+    value: '{{ checkmk_server__multisite_default_wato_aux_tags }}'
 
 
-# .. envvar:: checkmk_server__multisite_roles
+# .. envvar:: checkmk_server__multisite_default_wato_aux_tags
 #
-# Multisite permission roles to be configured
-checkmk_server__multisite_roles: '{{ checkmk_server__default_roles }}'
+# Default upstream auxiliary tags configuration.
+checkmk_server__multisite_default_wato_aux_tags:
+  - snmp: 'monitor via SNMP'
+  - tcp: 'monitor via Check_MK Agent'
 
 
-# .. envvar:: checkmk_server__default_roles
+# .. envvar:: checkmk_server__multisite_cfg_roles
 #
-# Default upstream multisite permission roles
-checkmk_server__default_roles:
+# Multisite user ``roles`` definition.
+checkmk_server__multisite_cfg_roles:
+  - name: 'roles'
+    value: '{{ checkmk_server__multisite_default_roles }}'
+
+
+# .. envvar:: checkmk_server__multisite_default_roles
+#
+# Default upstream user roles configuration.
+checkmk_server__multisite_default_roles:
   admin:
     alias: 'Administrator'
     builtin: True
