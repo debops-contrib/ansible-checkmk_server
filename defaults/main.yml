@@ -282,6 +282,7 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 # monitoring definitions.
 checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
                                      checkmk_server__site_cfg_hostgroups +
+                                     checkmk_server__site_cfg_servicegroups +
                                      checkmk_server__site_cfg_datasource_programs +
                                      checkmk_server__site_cfg_netif_description +
                                      checkmk_server__site_cfg_software_inventory }}'
@@ -318,6 +319,14 @@ checkmk_server__site_cfg_contactgroups:
 # Define host groups.
 checkmk_server__site_cfg_hostgroups:
   - name: 'define_hostgroups'
+    value: {}
+
+
+# .. envvar:: checkmk_server__site_cfg_servicegroups
+#
+# Define service groups.
+checkmk_server__site_cfg_servicegroups:
+  - name: 'define_servicegroups'
     value: {}
 
 
