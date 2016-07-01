@@ -34,6 +34,9 @@ checkmk_server__confd_variable_map:
   define_contactgroups:
     filename: 'groups.mk'
     template: 'dict_update_legacy'
+  define_hostgroups:
+    filename: 'groups.mk'
+    template: 'dict_update_legacy'
   inventory_check_interval:
     filename: 'global.mk'
     template: 'key_value'
