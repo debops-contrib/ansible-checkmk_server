@@ -28,6 +28,9 @@ checkmk_server__site_rule_kwargs: [ 'comment', 'description', 'disabled', 'docu_
 
 # Configuration variable definitions for Check_MK conf.d definitions
 checkmk_server__confd_variable_map:
+  bulkwalk_hosts:
+    filename: 'rules.mk'
+    template: 'rule'
   cmk_inv:
     filename: 'rules.mk'
     template: 'active_check'
@@ -43,6 +46,12 @@ checkmk_server__confd_variable_map:
   define_servicegroups:
     filename: 'groups.mk'
     template: 'dict_update_legacy'
+  host_contactgroups:
+    filename: 'rules.mk'
+    template: 'rule'
+  host_groups:
+    filename: 'rules.mk'
+    template: 'rule'
   inventory_check_interval:
     filename: 'global.mk'
     template: 'key_value'

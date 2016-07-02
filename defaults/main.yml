@@ -281,6 +281,7 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
 checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
+                                     checkmk_server__site_cfg_rules +
                                      checkmk_server__site_cfg_hostgroups +
                                      checkmk_server__site_cfg_servicegroups +
                                      checkmk_server__site_cfg_datasource_programs +
@@ -312,6 +313,24 @@ checkmk_server__site_cfg_contactgroups:
   - name: 'define_contactgroups'
     value:
       all: 'Everybody'
+
+
+# .. envvar:: checkmk_server__site_cfg_rules
+#
+# Define Check_MK monitoring rules.
+checkmk_server__site_cfg_rules: '{{ checkmk_server__site_upstream_rules }}'
+
+
+# .. envvar:: checkmk_server__site_upstream_rules
+#
+# Default upstream rule definitions
+checkmk_server__site_upstream_rules:
+  - name: 'bulkwalk_hosts'
+    tags: [ 'snmp', '!snmp-v1' ]
+    description: 'Hosts with the tag "snmp-v1" must not use bulkwalk'
+  - name: 'host_contactgroups'
+    value: 'all'
+    description: 'Put all hosts into the contact group "all"'
 
 
 # .. envvar:: checkmk_server__site_cfg_hostgroups
