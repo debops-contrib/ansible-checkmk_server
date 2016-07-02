@@ -23,6 +23,9 @@ checkmk_server__contact_properties: [ 'alias', 'contactgroup',
 checkmk_server__variable_map: '{{ checkmk_server__confd_variable_map |
   combine(checkmk_server__multisite_variable_map, recursive=True) }}'
 
+# List of properties which are allowed as kwargs argument for rules
+checkmk_server__site_rule_kwargs: [ 'comment', 'description', 'disabled', 'docu_url' ]
+
 # Configuration variable definitions for Check_MK conf.d definitions
 checkmk_server__confd_variable_map:
   cmk_inv:
