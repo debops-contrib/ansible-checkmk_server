@@ -23,8 +23,14 @@ checkmk_server__contact_properties: [ 'alias', 'contactgroup',
 checkmk_server__variable_map: '{{ checkmk_server__confd_variable_map |
   combine(checkmk_server__multisite_variable_map, recursive=True) }}'
 
+# List of properties which are allowed as kwargs argument for rules
+checkmk_server__site_rule_kwargs: [ 'comment', 'description', 'disabled', 'docu_url' ]
+
 # Configuration variable definitions for Check_MK conf.d definitions
 checkmk_server__confd_variable_map:
+  bulkwalk_hosts:
+    filename: 'rules.mk'
+    template: 'rule'
   cmk_inv:
     filename: 'rules.mk'
     template: 'active_check'
@@ -34,9 +40,27 @@ checkmk_server__confd_variable_map:
   define_contactgroups:
     filename: 'groups.mk'
     template: 'dict_update_legacy'
+  define_hostgroups:
+    filename: 'groups.mk'
+    template: 'dict_update_legacy'
+  define_servicegroups:
+    filename: 'groups.mk'
+    template: 'dict_update_legacy'
+  host_contactgroups:
+    filename: 'rules.mk'
+    template: 'rule'
+  host_groups:
+    filename: 'rules.mk'
+    template: 'rule'
+  ignored_services:
+    filename: 'rules.mk'
+    template: 'rule'
   inventory_check_interval:
     filename: 'global.mk'
     template: 'key_value'
+  service_groups:
+    filename: 'global.mk'
+    template: 'rule'
 
 # Configuration varaible definitions for Check_MK multisite definitions
 checkmk_server__multisite_variable_map:

@@ -281,6 +281,9 @@ checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
 checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
+                                     checkmk_server__site_cfg_rules +
+                                     checkmk_server__site_cfg_hostgroups +
+                                     checkmk_server__site_cfg_servicegroups +
                                      checkmk_server__site_cfg_datasource_programs +
                                      checkmk_server__site_cfg_netif_description +
                                      checkmk_server__site_cfg_software_inventory }}'
@@ -310,6 +313,40 @@ checkmk_server__site_cfg_contactgroups:
   - name: 'define_contactgroups'
     value:
       all: 'Everybody'
+
+
+# .. envvar:: checkmk_server__site_cfg_rules
+#
+# Define Check_MK monitoring rules.
+checkmk_server__site_cfg_rules: '{{ checkmk_server__site_upstream_rules }}'
+
+
+# .. envvar:: checkmk_server__site_upstream_rules
+#
+# Default upstream rule definitions
+checkmk_server__site_upstream_rules:
+  - name: 'bulkwalk_hosts'
+    tags: [ 'snmp', '!snmp-v1' ]
+    description: 'Hosts with the tag "snmp-v1" must not use bulkwalk'
+  - name: 'host_contactgroups'
+    value: 'all'
+    description: 'Put all hosts into the contact group "all"'
+
+
+# .. envvar:: checkmk_server__site_cfg_hostgroups
+#
+# Define host groups.
+checkmk_server__site_cfg_hostgroups:
+  - name: 'define_hostgroups'
+    value: {}
+
+
+# .. envvar:: checkmk_server__site_cfg_servicegroups
+#
+# Define service groups.
+checkmk_server__site_cfg_servicegroups:
+  - name: 'define_servicegroups'
+    value: {}
 
 
 # .. envvar:: checkmk_server__site_cfg_datasource_programs
