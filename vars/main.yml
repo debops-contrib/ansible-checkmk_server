@@ -52,6 +52,9 @@ checkmk_server__confd_variable_map:
   host_groups:
     filename: 'rules.mk'
     template: 'rule'
+  ignored_services:
+    filename: 'rules.mk'
+    template: 'rule'
   inventory_check_interval:
     filename: 'global.mk'
     template: 'key_value'
