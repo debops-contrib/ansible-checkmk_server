@@ -55,6 +55,9 @@ checkmk_server__confd_variable_map:
   inventory_check_interval:
     filename: 'global.mk'
     template: 'key_value'
+  service_groups:
+    filename: 'global.mk'
+    template: 'rule'
 
 # Configuration varaible definitions for Check_MK multisite definitions
 checkmk_server__multisite_variable_map:

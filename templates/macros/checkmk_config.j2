@@ -37,6 +37,22 @@
 {%   else %}
 {%     set _template = 'custom' %}
 {%   endif %}
+{%   if 'hosts' in _cfg_entry %}
+{#
+ #     Host list entries mustn't be formatted as unicode strings
+ #}
+{%     if (_cfg_entry.hosts is iterable) and (_cfg_entry.hosts | length > 0) %}
+{%       set _hosts = "['" + _cfg_entry.hosts | join("', '") + "']" %}
+{%     endif %}
+{%   endif %}
+{%   if 'tags' in _cfg_entry %}
+{#
+ #     Tags are formatted as a list with a trailing comma
+ #}
+{%     set _tags = "['" + _cfg_entry.tags | join("', '") + "', ]" %}
+{%   else %}
+{%     set _tags = "[]" %}
+{%   endif %}
 {%   if _template == 'key_value' %}
 {{     tmpl_var__key_value(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
      elif _template == 'dict_update' %}
@@ -55,7 +71,7 @@
 {%       endif %}
 {%     endfor %}
 
-{{     tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _cfg_entry.tags|d([]), _cfg_entry.hosts|d("ALL_HOSTS"), _rule_kwargs) }}{%
+{{     tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
      elif _template == 'active_check' %}
 {{     tmpl_var__active_check(_cfg_entry.name, _cfg_entry.filter, _cfg_entry.comment) }}{%
      elif _template == 'custom' %}
@@ -118,21 +134,23 @@ if type({{ _name }}) != dict:
 {#
  # The tmpl_var__rule() macro will generate a Check_MK rule variable entry.
  #
- # If the _value argument is an empty string, simply omit this item.
+ # Arguments:
+ #   _name: Check_MK variable name (string), required
+ #   _value: Rule name (string), will be omitted if empty
+ #   _tags: Preformatted list of Check_MK tags
+ #   _hosts: Preformatted list of Check_MK host names
+ #   _services: List of service patterns which will be formatted as unicode
+ #              list elements, will be omitted if empty
+ #   _kwargs: Additional rule properties (dictionary)
  #
  # The regex_replace() filter will make sure that the dictionary keys are not
  # serialized as unicode strings.
  #}
 
-{% macro tmpl_var__rule(_name, _value, _tags, _hosts, _kwargs) %}
-{% if _tags %}
-{%   set _formatted_tags = "['" + (_tags | join("', '")) + "', ]" %}
-{% else %}
-{%   set _formatted_tags = "[]" %}
-{% endif %}
+{% macro tmpl_var__rule(_name, _value, _tags, _hosts, _services, _kwargs) %}
 
 {{ _name }} = [
-  ( {{ "'" + _value + "', " if _value | length > 0 else "" }}{{ _formatted_tags }}, {{ _hosts }}, {{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
+  ( {{ "'" + _value + "', " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _services | pprint + ", " if _services | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
 ] + {{ _name }}
 {% endmacro %}
 
