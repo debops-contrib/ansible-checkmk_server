@@ -63,16 +63,22 @@
 {{     tmpl_var__tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
      elif _template == 'nested_tuple_list' %}
 {{     tmpl_var__nested_tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
-     elif _template == 'rule' %}
+     elif (_template == 'rule') or
+          (_template == 'rule_w_init') %}
 {%     set _rule_kwargs = {} %}
 {%     for _arg in checkmk_server__site_rule_kwargs %}
 {%       if _arg in _cfg_entry %}
 {%         set _ = _rule_kwargs.update({_arg: _cfg_entry[_arg]}) %}
 {%       endif %}
 {%     endfor %}
+{%     if _template == 'rule' %}
 
-{{     tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
-     elif _template == 'active_check' %}
+{{       tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
+       elif _template == 'rule_w_init' %}
+
+{{       tmpl_var__rule_w_init(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
+       endif %}
+{%   elif _template == 'active_check' %}
 {{     tmpl_var__active_check(_cfg_entry.name, _cfg_entry.filter, _cfg_entry.comment) }}{%
      elif _template == 'custom' %}
 {{     tmpl_var__custom(_cfg_entry.content|d("")) }}{%
@@ -152,6 +158,20 @@ if type({{ _name }}) != dict:
 {{ _name }} = [
   ( {{ "'" + _value + "', " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _services | pprint + ", " if _services | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
 ] + {{ _name }}
+{% endmacro %}
+
+
+{#
+ # The tmpl_var__rule_w_init() macro will make sure the given variable is
+ # initialized as list and then use the tpl_var__rule() macro to generate
+ # the rule entry.
+ #}
+
+{% macro tmpl_var__rule_w_init(_name, _value, _tags, _hosts, _services, _kwargs) %}
+
+if {{ _name }} == None:
+    {{ _name }} = []
+{{ tmpl_var__rule(_name, _value, _tags, _hosts, _services, _kwargs) }}
 {% endmacro %}
 
 

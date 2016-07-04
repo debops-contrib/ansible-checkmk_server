@@ -331,6 +331,9 @@ checkmk_server__site_upstream_rules:
   - name: 'host_contactgroups'
     value: 'all'
     description: 'Put all hosts into the contact group "all"'
+  - name: 'only_hosts'
+    tags: [ '!offline' ]
+    description: 'Do not monitor hosts with the tag "offline"'
 
 
 # .. envvar:: checkmk_server__site_cfg_hostgroups
