@@ -371,9 +371,9 @@ checkmk_server__site_cfg_software_inventory:
     value: 1440
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
-  - name: 'cmk_inv'
-    filter: 'ALL_HOSTS'
-    comment: 'Enable collection of hardware/software information'
+  - name: 'active_checks'
+    element: 'cmk_inv'
+    description: 'Enable collection of hardware/software information'
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
 

@@ -64,7 +64,8 @@
      elif _template == 'nested_tuple_list' %}
 {{     tmpl_var__nested_tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
      elif (_template == 'rule') or
-          (_template == 'rule_w_init') %}
+          (_template == 'rule_w_init') or
+          (_template == 'rule_w_default') %}
 {%     set _rule_kwargs = {} %}
 {%     for _arg in checkmk_server__site_rule_kwargs %}
 {%       if _arg in _cfg_entry %}
@@ -73,13 +74,15 @@
 {%     endfor %}
 {%     if _template == 'rule' %}
 
-{{       tmpl_var__rule(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
+{{       tmpl_var__rule(_cfg_entry.name, _cfg_entry.element|d(None), _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
        elif _template == 'rule_w_init' %}
 
 {{       tmpl_var__rule_w_init(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
-       endif %}
-{%   elif _template == 'active_check' %}
-{{     tmpl_var__active_check(_cfg_entry.name, _cfg_entry.filter, _cfg_entry.comment) }}{%
+
+       elif _template == 'rule_w_default' %}
+
+{{       tmpl_var__rule_w_default(_cfg_entry.name, _cfg_entry.element, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.services|d([]), _rule_kwargs) }}{%
+       endif %}{%
      elif _template == 'custom' %}
 {{     tmpl_var__custom(_cfg_entry.content|d("")) }}{%
      endif %}
@@ -142,6 +145,7 @@ if type({{ _name }}) != dict:
  #
  # Arguments:
  #   _name: Check_MK variable name (string), required
+ #   _element: Element name if the variable is a dictionary
  #   _value: Rule name (string), will be omitted if empty
  #   _tags: Preformatted list of Check_MK tags
  #   _hosts: Preformatted list of Check_MK host names
@@ -153,11 +157,17 @@ if type({{ _name }}) != dict:
  # serialized as unicode strings.
  #}
 
-{% macro tmpl_var__rule(_name, _value, _tags, _hosts, _services, _kwargs) %}
+{% macro tmpl_var__rule(_name, _element, _value, _tags, _hosts, _services, _kwargs) %}
+{#
+ # The 'None' value is used to encode None, therefore don't print it as string
+ #}
+{% if (_value | length > 0) and (_value != 'None') %}
+{%   set _value = "'" + _value + "'" %}
+{% endif %}
 
-{{ _name }} = [
-  ( {{ "'" + _value + "', " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _services | pprint + ", " if _services | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
-] + {{ _name }}
+{{ _name }}{{ "['" + _element + "']" if _element else "" }} = [
+  ( {{ _value + ", " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _services | pprint + ", " if _services | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
+] + {{ _name }}{{ "['" + _element + "']" if _element else "" }}
 {% endmacro %}
 
 
@@ -171,22 +181,22 @@ if type({{ _name }}) != dict:
 
 if {{ _name }} == None:
     {{ _name }} = []
-{{ tmpl_var__rule(_name, _value, _tags, _hosts, _services, _kwargs) }}
+{{ tmpl_var__rule(_name, None, _value, _tags, _hosts, _services, _kwargs) }}
 {% endmacro %}
 
 
 {#
- # The tmpl_var__active_check() macro will generate the necessary
- # 'active_checks' dictionary entries required to define a regular
- # Nagios active check.
+ # The tmpl_var__rule_w_default() macro generate a rule entry as dictionary
+ # element after setting an empty list as default element.
  #}
-{% macro tmpl_var__active_check(_name, _filter, _comment) %}
 
-active_checks.setdefault('{{ _name }}', [])
+{% macro tmpl_var__rule_w_default(_name, _element, _value, _tags, _hosts, _services, _kwargs) %}
+{% if _value | length == 0 %}
+{%   set _value = 'None' %}
+{% endif %}
 
-active_checks['{{ _name }}'] = [
-  ( None, [], {{ _filter }}, {'comment': u'{{ _comment }}' } ),
-]
+{{ _name }}.setdefault('{{ _element }}', [])
+{{ tmpl_var__rule(_name, _element, _value, _tags, _hosts, _services, _kwargs) }}
 {% endmacro %}
 
 
