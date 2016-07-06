@@ -49,6 +49,9 @@ checkmk_server__confd_variable_map:
   extra_service_conf:
     filename: 'rules.mk'
     template: 'rule_w_default'
+  host_check_commands:
+    filename: 'rules.mk'
+    template: 'rule'
   host_contactgroups:
     filename: 'rules.mk'
     template: 'rule'
