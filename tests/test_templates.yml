@@ -1,0 +1,73 @@
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    checkmk_server__site_rule_kwargs: [ 'comment', 'description', 'disabled', 'docu_url' ]
+    checkmk_server__site_config_map:
+      # rule without value, with two tags
+      - name: 'bulkwalk_hosts'
+        filename: 'rules.mk'
+        template: 'rule'
+        tags: [ 'snmp', '!snmp-v1' ]
+        description: 'Hosts with the tag "snmp-v1" must not use bulkwalk'
+      # rule without tag, with hostname and kwargs
+      - name: 'host_groups'
+        filename: 'rules.mk'
+        template: 'rule'
+        value: 'monitoring-servers'
+        hosts: [ 'localhost' ]
+        description: 'Assign localhost to monitoring-servers'
+        comment: 'this is a comment!!'
+        docu_url: 'http://localhost'
+      # rule without tag, without hostname
+      - name: 'host_contactgroups'
+        filename: 'rules.mk'
+        template: 'rule'
+        value: 'all'
+        description: 'Put all hosts into the contact group "all"'
+      # rule with hostname and condition
+      - name: 'service_groups'
+        filename: 'rules.mk'
+        template: 'rule'
+        value: 'disk-checks'
+        hosts: [ 'localhost' ]
+        conditions: [ 'Filesystem .*' ]
+        description: 'Assign disk checks'
+      # rule without value, without hostname, with two conditions
+      - name: 'ignored_services'
+        filename: 'rules.mk'
+        template: 'rule'
+        conditions: [ 'Interface veth.*$', 'Interface vnet.*$' ]
+        description: "Don't check local bridge ports"
+      # rule_w_init with tag
+      - name: 'only_hosts'
+        filename: 'rules.mk'
+        template: 'rule_w_init'
+        tags: [ '!offline' ]
+        description: 'Do not monitor hosts with the tag "offline"'
+      # rule_w_default without value
+      - name: 'active_checks'
+        element: 'cmk_inv'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        description: 'Enable collection of hardware/software information'
+      # rule_w_default with number value
+      - name: 'extra_service_conf'
+        element: 'check_interval'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value: 1440
+        conditions: [ 'Check_MK HW/SW Inventory$' ]
+        description: 'Restrict HW/SW-Inventory to once a day'
+      #
+      - name: 'host_check_commands'
+        filename: 'rules.mk'
+        template: 'rule'
+        value: 'agent'
+        tags: [ 'cmk-agent', 'dmz' ]
+        comment: "Ping doesn't work for DMZ hosts, use agent status"
+
+  tasks:
+    - template:
+        src: '../templates/etc/check_mk/conf.d/wato/rules.mk.j2'
+        dest: './test_out.mk'
