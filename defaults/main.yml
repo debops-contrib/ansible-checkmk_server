@@ -334,6 +334,11 @@ checkmk_server__site_upstream_rules:
   - name: 'only_hosts'
     tags: [ '!offline' ]
     description: 'Do not monitor hosts with the tag "offline"'
+  - name: 'extra_service_conf'
+    element: 'check_interval'
+    value: 1440
+    conditions: [ 'Check_MK HW/SW Inventory$' ]
+    description: 'Restrict HW/SW-Inventory to once a day'
 
 
 # .. envvar:: checkmk_server__site_cfg_hostgroups

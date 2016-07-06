@@ -159,10 +159,14 @@ if type({{ _name }}) != dict:
 
 {% macro tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) %}
 {#
- # The 'None' value is used to encode None, therefore don't print it as string
+ # Properly quote strings. The 'None' value is used to encode None, therefore
+ # don't print it as string. Cast number to string type for concatenation and
+ # length() filter to succeed.
  #}
-{% if (_value | length > 0) and (_value != 'None') %}
+{% if (not _value is number) and (_value | length > 0) and (_value != 'None') %}
 {%   set _value = "'" + _value + "'" %}
+{% elif _value is number %}
+{%   set _value = _value|string %}
 {% endif %}
 
 {{ _name }}{{ "['" + _element + "']" if _element else "" }} = [
@@ -181,8 +185,8 @@ if type({{ _name }}) != dict:
 
 if {{ _name }} == None:
     {{ _name }} = []
-{{ tmpl_var__rule(_name, None, _value, _tags, _hosts, _conditions, _kwargs) }}
-{% endmacro %}
+{{ tmpl_var__rule(_name, None, _value, _tags, _hosts, _conditions, _kwargs) }}{%
+   endmacro %}
 
 
 {#
@@ -191,13 +195,13 @@ if {{ _name }} == None:
  #}
 
 {% macro tmpl_var__rule_w_default(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) %}
-{% if _value | length == 0 %}
+{% if (not _value is number) and (_value | length == 0) %}
 {%   set _value = 'None' %}
 {% endif %}
 
 {{ _name }}.setdefault('{{ _element }}', [])
-{{ tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) }}
-{% endmacro %}
+{{ tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) }}{%
+   endmacro %}
 
 
 {#

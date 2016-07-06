@@ -46,6 +46,9 @@ checkmk_server__confd_variable_map:
   define_servicegroups:
     filename: 'groups.mk'
     template: 'dict_update_legacy'
+  extra_service_conf:
+    filename: 'rules.mk'
+    template: 'rule_w_default'
   host_contactgroups:
     filename: 'rules.mk'
     template: 'rule'
