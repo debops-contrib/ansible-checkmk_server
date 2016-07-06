@@ -331,6 +331,14 @@ checkmk_server__site_upstream_rules:
   - name: 'host_contactgroups'
     value: 'all'
     description: 'Put all hosts into the contact group "all"'
+  - name: 'only_hosts'
+    tags: [ '!offline' ]
+    description: 'Do not monitor hosts with the tag "offline"'
+  - name: 'extra_service_conf'
+    element: 'check_interval'
+    value: 1440
+    conditions: [ 'Check_MK HW/SW Inventory$' ]
+    description: 'Restrict HW/SW-Inventory to once a day'
 
 
 # .. envvar:: checkmk_server__site_cfg_hostgroups
@@ -368,9 +376,9 @@ checkmk_server__site_cfg_software_inventory:
     value: 1440
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
-  - name: 'cmk_inv'
-    filter: 'ALL_HOSTS'
-    comment: 'Enable collection of hardware/software information'
+  - name: 'active_checks'
+    element: 'cmk_inv'
+    description: 'Enable collection of hardware/software information'
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
 
