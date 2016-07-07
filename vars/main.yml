@@ -67,6 +67,9 @@ checkmk_server__confd_variable_map:
   only_hosts:
     filename: 'rules.mk'
     template: 'rule_w_init'
+  ping_levels:
+    filename: 'rules.mk'
+    template: 'rule'
   service_groups:
     filename: 'global.mk'
     template: 'rule'

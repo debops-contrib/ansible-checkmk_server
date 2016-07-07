@@ -328,17 +328,25 @@ checkmk_server__site_upstream_rules:
   - name: 'bulkwalk_hosts'
     tags: [ 'snmp', '!snmp-v1' ]
     description: 'Hosts with the tag "snmp-v1" must not use bulkwalk'
+  - name: 'extra_service_conf'
+    element: 'check_interval'
+    value: 1440
+    conditions: [ 'Check_MK HW/SW Inventory$' ]
+    description: 'Restrict HW/SW-Inventory to once a day'
   - name: 'host_contactgroups'
     value: 'all'
     description: 'Put all hosts into the contact group "all"'
   - name: 'only_hosts'
     tags: [ '!offline' ]
     description: 'Do not monitor hosts with the tag "offline"'
-  - name: 'extra_service_conf'
-    element: 'check_interval'
-    value: 1440
-    conditions: [ 'Check_MK HW/SW Inventory$' ]
-    description: 'Restrict HW/SW-Inventory to once a day'
+  - name: 'ping_levels'
+    value:
+      loss: [ 80.0, 100.0 ]
+      packets: 6
+      timeout: 20
+      rta: [ 1500.0, 3000.0 ]
+    tags: [ 'wan' ]
+    description: 'Allow longer round trip times when pinging WAN hosts'
 
 
 # .. envvar:: checkmk_server__site_cfg_hostgroups
