@@ -182,19 +182,9 @@ if type({{ _name }}) != dict:
  #}
 
 {% macro tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) %}
-{#
- # Properly quote strings. The 'None' value is used to encode None, therefore
- # don't print it as string. Cast number to string type for concatenation and
- # length() filter to succeed.
- #}
-{% if (not _value is number) and (_value | length > 0) and (_value != 'None') %}
-{%   set _value = "'" + _value + "'" %}
-{% elif _value is number %}
-{%   set _value = _value|string %}
-{% endif %}
 
 {{ _name }}{{ "['" + _element + "']" if _element else "" }} = [
-  ( {{ _value + ", " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _conditions | pprint + ", " if _conditions | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
+  ( {{ tmpl_format__value(_value) }}{{ _tags }}, {{ _hosts }}, {{ _conditions | pprint + ", " if _conditions | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
 ] + {{ _name }}{{ "['" + _element + "']" if _element else "" }}
 {% endmacro %}
 
@@ -253,3 +243,34 @@ if {{ _name }} == None:
 
 {{ _content }}
 {% endmacro %}
+
+
+{#
+ # The tmpl_format__value() macro will format an input value as required for
+ # a Check_MK rule.
+ #}
+
+{% macro tmpl_format__value(_value) %}
+{#
+ # Properly quote strings. The 'None' value is used to encode None, therefore
+ # don't print it as string.
+ #}
+{% if (_value is string) and
+      (_value | length > 0) and
+      (_value != 'None') %}
+{%   set _rule = "'" + _value + "'" %}
+{% elif (_value is mapping) %}
+{#
+ #   Remove unicode hints for dictionary keys and substitute lists with tuples.
+ #}
+{%   set _rule = _value | regex_replace("(, |{)u'", "\\1'") | replace("[", "(") | replace("]", ")") %}
+{% else %}
+{#
+ #   Cast number to string type for concatenation and length() filter to succeed.
+ #}
+{%   set _rule = _value|string %}
+{% endif
+
+%}{{ _rule + ", " if _rule | length > 0 else "" }}{%
+
+   endmacro %}
