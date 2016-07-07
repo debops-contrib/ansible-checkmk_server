@@ -49,3 +49,27 @@ extra_service_conf['check_interval'] = [
 host_check_commands = [
   ( 'agent', ['cmk-agent', 'dmz', ], ALL_HOSTS, {'comment': u"Ping doesn't work for DMZ hosts, use agent status"} ),
 ] + host_check_commands
+
+
+ping_levels = [
+  ( {'loss': (80.0, 100.0), 'packets': 6, 'timeout': 20, 'rta': (1500.0, 3000.0)}, ['wan', ], ALL_HOSTS, {'description': u'Allow longer round trip times when pinging WAN hosts'} ),
+] + ping_levels
+
+
+checkgroup_parameters.setdefault('filesystem', [])
+
+checkgroup_parameters['filesystem'] = [
+  ( {'trend_range': 48, 'magic_normsize': 5, 'trend_showtimeleft': True, 'levels': (90.0, 95.0), 'magic': 0.8, 'trend_timeleft': (72, 24), 'trend_perfdata': True}, [], ALL_HOSTS, ALL_SERVICES ),
+] + checkgroup_parameters['filesystem']
+
+
+snmp_timing = [
+  ( {'timeout': 15.0}, ['snmp', ], ALL_HOSTS ),
+] + snmp_timing
+
+
+checkgroup_parameters.setdefault('cpu_load', [])
+
+checkgroup_parameters['cpu_load'] = [
+  ( {'levels_upper': ('absolute', (2.0, 4.0)), 'period': 'wday', 'horizon': 90}, [], ALL_HOSTS ),
+] + checkgroup_parameters['cpu_load']

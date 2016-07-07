@@ -59,13 +59,57 @@
         value: 1440
         conditions: [ 'Check_MK HW/SW Inventory$' ]
         description: 'Restrict HW/SW-Inventory to once a day'
-      #
+      # example for host_check_commands
       - name: 'host_check_commands'
         filename: 'rules.mk'
         template: 'rule'
         value: 'agent'
         tags: [ 'cmk-agent', 'dmz' ]
         comment: "Ping doesn't work for DMZ hosts, use agent status"
+      # default upstream rule using dict value
+      - name: 'ping_levels'
+        filename: 'rules.mk'
+        template: 'rule'
+        value:
+          loss: [ 80.0, 100.0 ]
+          packets: 6
+          timeout: 20
+          rta: [ 1500.0, 3000.0 ]
+        tags: [ 'wan' ]
+        description: 'Allow longer round trip times when pinging WAN hosts'
+      # rule_w_default using dict value and ALL_SERVICES condition
+      - name: 'checkgroup_parameters'
+        element: 'filesystem'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value:
+          trend_range: 48
+          magic_normsize: 5
+          trend_showtimeleft: True
+          levels: [ 90.0, 95.0 ]
+          magic: 0.8
+          trend_timeleft: [ 72, 24 ]
+          trend_perfdata: True
+        conditions: 'ALL_SERVICES'
+      # simple rule without conditions or description
+      - name: 'snmp_timing'
+        filename: 'rules.mk'
+        template: 'rule'
+        value:
+          timeout: 15.0
+        tags: [ 'snmp' ]
+      # rule_w_default using nested lists
+      - name: 'checkgroup_parameters'
+        element: 'cpu_load'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value:
+          levels_upper:
+            - absolute:
+              - 2.0
+              - 4.0
+          period: 'wday'
+          horizon: 90
 
   tasks:
     - template:

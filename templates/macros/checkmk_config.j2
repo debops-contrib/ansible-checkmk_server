@@ -30,21 +30,18 @@
  #}
 
 {% macro tmpl_var_define(_cfg_entry) %}
-{%   if 'template' in _cfg_entry %}
-{%     set _template = _cfg_entry.template %}
-{%   elif checkmk_server__variable_map[_cfg_entry.name|d("undefined name")].template|d() %}
-{%     set _template = checkmk_server__variable_map[_cfg_entry.name].template %}
-{%   else %}
-{%     set _template = 'custom' %}
-{%   endif %}
-{%   if 'hosts' in _cfg_entry %}
 {#
- #     Host list entries mustn't be formatted as unicode strings
+ #   Fail if name property is not set
  #}
-{%     if (_cfg_entry.hosts is iterable) and (_cfg_entry.hosts | length > 0) %}
-{%       set _hosts = "['" + _cfg_entry.hosts | join("', '") + "']" %}
-{%     endif %}
+{%   set _name = _cfg_entry.name %}
+{%   if 'element' in _cfg_entry %}
+{%     set _element = _cfg_entry.element %}
 {%   endif %}
+{#
+ #   Set empty value if none was given. Leave to the macros how to deal with
+ #   this
+ #}
+{%   set _value = _cfg_entry.value|d("") %}
 {%   if 'tags' in _cfg_entry %}
 {#
  #     Tags are formatted as a list with a trailing comma
@@ -53,16 +50,43 @@
 {%   else %}
 {%     set _tags = "[]" %}
 {%   endif %}
+{%   if 'hosts' in _cfg_entry %}
+{#
+ #     Host list entries mustn't be formatted as unicode strings
+ #}
+{%     if (_cfg_entry.hosts is iterable) and (_cfg_entry.hosts | length > 0) %}
+{%       set _formatted_hosts = "['" + _cfg_entry.hosts | join("', '") + "']" %}
+{%     endif %}
+{%   endif %}
+{%   if _formatted_hosts is defined %}
+{%     set _hosts = _formatted_hosts %}
+{%   else %}
+{%     set _hosts = _cfg_entry.hosts|d("ALL_HOSTS") %}
+{%   endif %}
+{%   set _conditions = _cfg_entry.conditions|d([]) %}
+{#
+ #   Search if template association can be found and fallback to 'custom'
+ #}
+{%   if 'template' in _cfg_entry %}
+{%     set _template = _cfg_entry.template %}
+{%   elif checkmk_server__variable_map[_cfg_entry.name].template|d() %}
+{%     set _template = checkmk_server__variable_map[_cfg_entry.name].template %}
+{%   else %}
+{%     set _template = 'custom' %}
+{%   endif %}
+{#
+ #   Call jinja macro according to _template value
+ #}
 {%   if _template == 'key_value' %}
-{{     tmpl_var__key_value(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+{{     tmpl_var__key_value(_name, _value) }}{%
      elif _template == 'dict_update' %}
-{{     tmpl_var__dict_update(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+{{     tmpl_var__dict_update(_name, _value) }}{%
      elif _template == 'dict_update_legacy' %}
-{{     tmpl_var__dict_update_legacy(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+{{     tmpl_var__dict_update_legacy(_name, _value) }}{%
      elif _template == 'tuple_list' %}
-{{     tmpl_var__tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+{{     tmpl_var__tuple_list(_name, _value) }}{%
      elif _template == 'nested_tuple_list' %}
-{{     tmpl_var__nested_tuple_list(_cfg_entry.name, _cfg_entry.value|d("")) }}{%
+{{     tmpl_var__nested_tuple_list(_name, _value) }}{%
      elif (_template == 'rule') or
           (_template == 'rule_w_init') or
           (_template == 'rule_w_default') %}
@@ -74,14 +98,14 @@
 {%     endfor %}
 {%     if _template == 'rule' %}
 
-{{       tmpl_var__rule(_cfg_entry.name, _cfg_entry.element|d(None), _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.conditions|d([]), _rule_kwargs) }}{%
+{{       tmpl_var__rule(_name, _element|d(None), _value, _tags, _hosts, _conditions, _rule_kwargs) }}{%
        elif _template == 'rule_w_init' %}
 
-{{       tmpl_var__rule_w_init(_cfg_entry.name, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.conditions|d([]), _rule_kwargs) }}{%
+{{       tmpl_var__rule_w_init(_name, _value, _tags, _hosts, _conditions, _rule_kwargs) }}{%
 
        elif _template == 'rule_w_default' %}
 
-{{       tmpl_var__rule_w_default(_cfg_entry.name, _cfg_entry.element, _cfg_entry.value|d(""), _tags, _hosts|d("ALL_HOSTS"), _cfg_entry.conditions|d([]), _rule_kwargs) }}{%
+{{       tmpl_var__rule_w_default(_name, _element, _value, _tags, _hosts, _conditions, _rule_kwargs) }}{%
        endif %}{%
      elif _template == 'custom' %}
 {{     tmpl_var__custom(_cfg_entry.content|d("")) }}{%
@@ -152,25 +176,12 @@ if type({{ _name }}) != dict:
  #   _conditions: List of patterns which will be formatted as unicode list
  #                elements, will be omitted if empty
  #   _kwargs: Additional rule properties (dictionary)
- #
- # The regex_replace() filter will make sure that the dictionary keys are not
- # serialized as unicode strings.
  #}
 
 {% macro tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) %}
-{#
- # Properly quote strings. The 'None' value is used to encode None, therefore
- # don't print it as string. Cast number to string type for concatenation and
- # length() filter to succeed.
- #}
-{% if (not _value is number) and (_value | length > 0) and (_value != 'None') %}
-{%   set _value = "'" + _value + "'" %}
-{% elif _value is number %}
-{%   set _value = _value|string %}
-{% endif %}
 
 {{ _name }}{{ "['" + _element + "']" if _element else "" }} = [
-  ( {{ _value + ", " if _value | length > 0 else "" }}{{ _tags }}, {{ _hosts }}, {{ _conditions | pprint + ", " if _conditions | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
+  ( {{ tmpl_format__value(_value) }}{{ _tags }}, {{ _hosts }}{{ ", " + tmpl_format__conditions(_conditions) if _conditions else "" }}{{ ", " + tmpl_format__dict(_kwargs) if _kwargs else "" }} ),
 ] + {{ _name }}{{ "['" + _element + "']" if _element else "" }}
 {% endmacro %}
 
@@ -229,3 +240,65 @@ if {{ _name }} == None:
 
 {{ _content }}
 {% endmacro %}
+
+
+{#
+ # The tmpl_format__conditions() macro will format the condition filed of a
+ # Check_MK rule variable. It mainly pretty prints the value, so that list
+ # elements are indicated as unicode string and make sure that the special
+ # ALL_SERVICES value is not printed as regular string.
+ #}
+
+{% macro tmpl_format__conditions(_conditions) %}
+{% if _conditions == 'ALL_SERVICES'
+%}ALL_SERVICES{%
+   else
+%}{{ _conditions | pprint }}{%
+   endif %}{%
+   endmacro %}
+
+
+{#
+ # The tmpl_format__dict() macro will format a dictionary on one line. The
+ # regex_replace() filter will make sure that the dictionary keys are not
+ # serialized as unicode strings.
+ #}
+
+{% macro tmpl_format__dict(_dict)
+%}{{ _dict | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }}{%
+   endmacro %}
+
+
+{#
+ # The tmpl_format__value() macro will format an input value as required for
+ # a Check_MK rule.
+ #}
+
+{% macro tmpl_format__value(_value) %}
+{#
+ # Properly quote strings. The 'None' value is used to encode None, therefore
+ # don't print it as string.
+ #}
+{% if (_value is string) and
+      (_value | length > 0) and
+      (_value != 'None') %}
+{%   set _rule = "'" + _value + "'" %}
+{% elif (_value is mapping) %}
+{#
+ #   Remove unicode hints for dictionary keys.
+ #   Substitute lists with tuples: ['foo', 'bar'] -> ('foo', 'bar')
+ #   Fix nested lists: ({'foo': (bar)}) -> ('foo', ('bar'))
+ #}
+{%   set _rule = _value | regex_replace("(, |{)u'", "\\1'") |
+                          replace("[", "(") | replace("]", ")") |
+                          regex_replace("\({('[\w]+'):", "(\\1,") | replace(")})", "))") %}
+{% else %}
+{#
+ #   Cast number to string type for concatenation and length() filter to succeed.
+ #}
+{%   set _rule = _value|string %}
+{% endif
+
+%}{{ _rule + ", " if _rule | length > 0 else "" }}{%
+
+   endmacro %}
