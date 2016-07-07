@@ -49,3 +49,8 @@ extra_service_conf['check_interval'] = [
 host_check_commands = [
   ( 'agent', ['cmk-agent', 'dmz', ], ALL_HOSTS, {'comment': u"Ping doesn't work for DMZ hosts, use agent status"} ),
 ] + host_check_commands
+
+
+ping_levels = [
+  ( {'loss': (80.0, 100.0), 'packets': 6, 'timeout': 20, 'rta': (1500.0, 3000.0)}, ['wan', ], ALL_HOSTS, {'description': u'Allow longer round trip times when pinging WAN hosts'} ),
+] + ping_levels

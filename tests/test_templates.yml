@@ -59,13 +59,24 @@
         value: 1440
         conditions: [ 'Check_MK HW/SW Inventory$' ]
         description: 'Restrict HW/SW-Inventory to once a day'
-      #
+      # example for host_check_commands
       - name: 'host_check_commands'
         filename: 'rules.mk'
         template: 'rule'
         value: 'agent'
         tags: [ 'cmk-agent', 'dmz' ]
         comment: "Ping doesn't work for DMZ hosts, use agent status"
+      # default upstream rule using dict value
+      - name: 'ping_levels'
+        filename: 'rules.mk'
+        template: 'rule'
+        value:
+          loss: [ 80.0, 100.0 ]
+          packets: 6
+          timeout: 20
+          rta: [ 1500.0, 3000.0 ]
+        tags: [ 'wan' ]
+        description: 'Allow longer round trip times when pinging WAN hosts'
 
   tasks:
     - template:
