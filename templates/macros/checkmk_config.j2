@@ -184,7 +184,7 @@ if type({{ _name }}) != dict:
 {% macro tmpl_var__rule(_name, _element, _value, _tags, _hosts, _conditions, _kwargs) %}
 
 {{ _name }}{{ "['" + _element + "']" if _element else "" }} = [
-  ( {{ tmpl_format__value(_value) }}{{ _tags }}, {{ _hosts }}, {{ _conditions | pprint + ", " if _conditions | length > 0 else "" }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
+  ( {{ tmpl_format__value(_value) }}{{ _tags }}, {{ _hosts }}, {{ tmpl_format__conditions(_conditions) }}{{ _kwargs | pprint | replace("\n", "") | regex_replace("(, |{)u'", "\\1'") }} ),
 ] + {{ _name }}{{ "['" + _element + "']" if _element else "" }}
 {% endmacro %}
 
@@ -243,6 +243,22 @@ if {{ _name }} == None:
 
 {{ _content }}
 {% endmacro %}
+
+
+{#
+ # The tmpl_format__conditions() will format the condition filed of a Check_MK
+ # rule variable. It mainly pretty prints the value, so that list elements are
+ # indicated as unicode string and make sure that the special ALL_SERVICES
+ # value is not printed as regular string.
+ #}
+
+{% macro tmpl_format__conditions(_conditions) %}
+{% if _conditions == 'ALL_SERVICES'
+%}ALL_SERVICES,{%
+   else
+%}{{ _conditions | pprint + ", " if _conditions | length > 0 else "" }}{%
+   endif %}{%
+   endmacro %}
 
 
 {#
