@@ -34,6 +34,9 @@ checkmk_server__confd_variable_map:
   bulkwalk_hosts:
     filename: 'rules.mk'
     template: 'rule'
+  checkgroup_parameters:
+    filename: 'rules.mk'
+    template: 'rule_w_default'
   datasource_programs:
     filename: 'rules.mk'
     template: 'rule'
@@ -72,6 +75,9 @@ checkmk_server__confd_variable_map:
     template: 'rule'
   service_groups:
     filename: 'global.mk'
+    template: 'rule'
+  snmp_timing:
+    filename: 'rules.mk'
     template: 'rule'
 
 # Configuration varaible definitions for Check_MK multisite definitions

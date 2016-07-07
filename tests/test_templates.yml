@@ -77,6 +77,27 @@
           rta: [ 1500.0, 3000.0 ]
         tags: [ 'wan' ]
         description: 'Allow longer round trip times when pinging WAN hosts'
+      # rule_w_default using dict value and ALL_SERVICES condition
+      - name: 'checkgroup_parameters'
+        element: 'filesystem'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value:
+          trend_range: 48
+          magic_normsize: 5
+          trend_showtimeleft: True
+          levels: [ 90.0, 95.0 ]
+          magic: 0.8
+          trend_timeleft: [ 72, 24 ]
+          trend_perfdata: True
+        conditions: 'ALL_SERVICES'
+      # simple rule without conditions or description
+      - name: 'snmp_timing'
+        filename: 'rules.mk'
+        template: 'rule'
+        value:
+          timeout: 15.0
+        tags: [ 'snmp' ]
 
   tasks:
     - template:
