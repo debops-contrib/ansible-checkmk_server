@@ -98,6 +98,18 @@
         value:
           timeout: 15.0
         tags: [ 'snmp' ]
+      # rule_w_default using nested lists
+      - name: 'checkgroup_parameters'
+        element: 'cpu_load'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value:
+          levels_upper:
+            - absolute:
+              - 2.0
+              - 4.0
+          period: 'wday'
+          horizon: 90
 
   tasks:
     - template:

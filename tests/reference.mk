@@ -66,3 +66,10 @@ checkgroup_parameters['filesystem'] = [
 snmp_timing = [
   ( {'timeout': 15.0}, ['snmp', ], ALL_HOSTS ),
 ] + snmp_timing
+
+
+checkgroup_parameters.setdefault('cpu_load', [])
+
+checkgroup_parameters['cpu_load'] = [
+  ( {'levels_upper': ('absolute', (2.0, 4.0)), 'period': 'wday', 'horizon': 90}, [], ALL_HOSTS ),
+] + checkgroup_parameters['cpu_load']

@@ -285,9 +285,13 @@ if {{ _name }} == None:
 {%   set _rule = "'" + _value + "'" %}
 {% elif (_value is mapping) %}
 {#
- #   Remove unicode hints for dictionary keys and substitute lists with tuples.
+ #   Remove unicode hints for dictionary keys.
+ #   Substitute lists with tuples: ['foo', 'bar'] -> ('foo', 'bar')
+ #   Fix nested lists: ({'foo': (bar)}) -> ('foo', ('bar'))
  #}
-{%   set _rule = _value | regex_replace("(, |{)u'", "\\1'") | replace("[", "(") | replace("]", ")") %}
+{%   set _rule = _value | regex_replace("(, |{)u'", "\\1'") |
+                          replace("[", "(") | replace("]", ")") |
+                          regex_replace("\({('[\w]+'):", "(\\1,") | replace(")})", "))") %}
 {% else %}
 {#
  #   Cast number to string type for concatenation and length() filter to succeed.
