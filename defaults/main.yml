@@ -89,6 +89,26 @@ checkmk_server__prerequisite_packages: [ 'apache2' ]
 checkmk_server__site: 'debops'
 
 
+# .. envvar:: checkmk_server__hostname
+#
+# Set Check_MK server DNS hostname (e.g. for agent download, API calls, ...).
+checkmk_server__hostname: '{{ ansible_fqdn }}'
+
+
+# .. envvar:: checkmk_server__site_url
+#
+# Check_MK server site URL.
+checkmk_server__site_url: '{{ ("https://" if checkmk_server__pki else "http://") +
+                               checkmk_server__hostname + "/" +
+                               checkmk_server__site }}'
+
+
+# .. envvar:: checkmk_server__webapi_url
+#
+# WebAPI URL of monitoring site.
+checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py" }}'
+
+
 # .. envvar:: checkmk_server__runtime_config
 #
 # Check_MK site runtime configuration (``omd config``). Changing
