@@ -214,15 +214,17 @@ checkmk_server__multisite_default_wato_aux_tags:
 
 # .. envvar:: checkmk_server__multisite_cfg_roles
 #
-# Multisite user ``roles`` definition.
+# Multisite user ``roles`` configuration.
 checkmk_server__multisite_cfg_roles:
   - name: 'roles'
-    value: '{{ checkmk_server__multisite_default_roles }}'
+    value: '{{ checkmk_server__multisite_default_roles |
+               combine(checkmk_server__multisite_debops_roles, recursive=True) |
+               combine(checkmk_server__multisite_custom_roles, recursive=True) }}'
 
 
 # .. envvar:: checkmk_server__multisite_default_roles
 #
-# Default upstream user roles configuration.
+# Default upstream multisite user role definitions.
 checkmk_server__multisite_default_roles:
   admin:
     alias: 'Administrator'
@@ -238,11 +240,50 @@ checkmk_server__multisite_default_roles:
     permissions: {}
 
 
+# .. envvar:: checkmk_server__multisite_debops_roles
+#
+# Multisite user role definitions used by the Ansible role.
+checkmk_server__multisite_debops_roles:
+  api:
+    alias: 'Automation API'
+    basedon: 'user'
+    permissions:
+      general.see_all: True
+      wato.all_folders: True
+      wato.hosttags: True
+      wato.see_all_folders: True
+      wato.seeall: True
+      wato.use: True
+
+
+# .. envvar:: checkmk_server__multisite_custom_roles
+#
+# Custom multisite user role definitions.
+checkmk_server__multisite_custom_roles: {}
+
+
 # .. envvar:: checkmk_server__multisite_users
 #
 # Locally defined multisite users to be configured. See
 # :ref:`checkmk_server__multisite_users` for more information.
-checkmk_server__multisite_users: {}
+checkmk_server__multisite_users: '{{ checkmk_server__multisite_debops_users |
+                                     combine(checkmk_server__multisite_custom_users, recursive=True) }}'
+
+
+# .. envvar:: checkmk_server__multisite_default_users:
+#
+# Multisite user definitions used by the Ansible role.
+checkmk_server__multisite_debops_users:
+  ansible:
+    alias: 'Automation User used by Ansible'
+    automation_secret: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/ansible/secret") }}'
+    roles: [ 'api' ]
+
+
+# .. envvar:: checkmk_server__multisite_custom_users:
+#
+# Custom multisite user definitions.
+checkmk_server__multisite_custom_users: {}
 
 
 # .. envvar:: checkmk_server__multisite_user_defaults
