@@ -125,7 +125,7 @@
 - name: Read SSH public key
   command: 'cat {{ checkmk_server__site_home }}/.ssh/id_rsa.pub'
   changed_when: False
-  register: checkmk_server_register_ssh_pubkey
+  register: checkmk_server__register_ssh_public_key
   when: checkmk_server__sshkeys|d()
 
 - name: Wait for the site to be started

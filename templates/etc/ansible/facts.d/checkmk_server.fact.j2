@@ -1,3 +1,8 @@
-{
-"ssh_publickey": "{{ checkmk_server_register_ssh_pubkey.stdout }}"
-}
+{% set _site_facts = {} %}
+{% set _ = _site_facts.update({checkmk_server__site: {"version": checkmk_server__version_label}}) %}
+{% set _ = _site_facts[checkmk_server__site].update({"site_url": checkmk_server__site_url}) %}
+{% set _ = _site_facts[checkmk_server__site].update({"webapi_url": checkmk_server__webapi_url}) %}
+{% if checkmk_server__register_ssh_public_key.stdout|d() %}
+{%   set _ = _site_facts[checkmk_server__site].update({"ssh_public_key": checkmk_server__register_ssh_public_key.stdout}) %}
+{% endif %}
+{{ _site_facts | to_nice_json }}
