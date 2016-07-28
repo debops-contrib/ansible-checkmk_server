@@ -167,6 +167,26 @@
   with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
+- name: Create Web directory for multisite users
+  file:
+    path: '{{ checkmk_server__site_home }}/var/check_mk/web/{{ item }}'
+    state: directory
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
+    mode: '0770'
+  with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
+
+- name: Create automation.secret
+  template:
+    src: 'var/check_mk/web/user/automation.secret.j2'
+    dest: '{{ checkmk_server__site_home }}/var/check_mk/web/{{ item }}/automation.secret'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
+    mode: '0660'
+  when: ("automation_secret" in checkmk_server__multisite_users[item])
+  with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
+  tags: [ 'role::checkmk_server:multisite' ]
+
 - name: Generate Check_MK WATO multisite definitions
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'

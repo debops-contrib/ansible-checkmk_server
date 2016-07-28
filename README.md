@@ -26,6 +26,10 @@ This role requires at least Ansible `v2.0`. To install it, run:
 ansible-galaxy install debops-contrib.checkmk_server
 ```
 
+### Role dependencies
+
+- `debops.secret`
+
 ### Are you using this as a standalone role without DebOps?
 
 You may need to include missing roles from the [DebOps common
