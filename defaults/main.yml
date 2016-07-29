@@ -129,6 +129,27 @@ checkmk_server__sshkeys:
   generate_keypair: True
 
 
+# .. envvar:: checkmk_server__ssh_user
+#
+# User account which is used to query Check_MK agent via SSH.
+checkmk_server__ssh_user: 'checkmk'
+
+
+# .. envvar:: checkmk_server__ssh_command
+#
+# Command which is executed when querying the Check_MK agent via SSH. Set this
+# to :command:`/usr/bin/check_mk_caching_agent` when agents are queried by
+# multiple servers.
+checkmk_server__ssh_command: '{{ "/usr/bin/sudo " if not checkmk_server__ssh_user == "root" else omit }}/usr/bin/check_mk_agent'
+
+
+# .. envvar:: checkmk_server__ssh_options
+#
+# SSH arguments used when querying the Check_MK agent. For possible options
+# check :command:`man 5 ssh_config`.
+checkmk_server__ssh_arguments: '-o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s'
+
+
 # ---------------------------
 # Multisite Web Configuration
 # ---------------------------
@@ -431,7 +452,7 @@ checkmk_server__site_cfg_servicegroups:
 # Define additional ``datasource_programs`` for agent access via SSH.
 checkmk_server__site_cfg_datasource_programs:
   - name: 'datasource_programs'
-    value: 'ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s -l root <IP> /usr/bin/check_mk_agent'
+    value: 'ssh {{ checkmk_server__ssh_arguments }} -l {{ checkmk_server__ssh_user }} <IP> {{ checkmk_server__ssh_command }}'
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
 
