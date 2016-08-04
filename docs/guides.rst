@@ -5,7 +5,7 @@ Guides and examples
    :local:
    :depth: 2
 
-.. _checkmk_package_source:
+.. _checkmk_server_package_source:
 
 Alternative Package Source
 --------------------------
@@ -33,3 +33,21 @@ the ``check-mk-raw`` package:
   defined. E.g.::
 
     checkmk_server__raw_package: '/vagrant/check-mk-raw-{{ checkmk_server__version }}_0.{{ ansible_distribution_release }}_amd64.deb'
+
+
+.. _checkmk_server_manual_site:
+
+Manually setup Monitoring Site
+------------------------------
+
+By default the role will setup a monitoring site named according to
+:envvar:`checkmk_server__site`. Sometimes it might be desired to not let
+Ansible generate a site configuration by itself but use the :program:`omd`
+tool manually instead. This can be achieved by simply setting::
+
+    checkmk_server__site: False
+
+When not managing the site configuration through Ansible, the
+`debops-contrib/checkmk_agent` role won't be able to auto-detect the server
+properties. They need to be specified manually in the Ansible inventory.
+For more details check the agent role documentation.

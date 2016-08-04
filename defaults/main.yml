@@ -8,13 +8,13 @@
 
 # .. envvar:: checkmk_server__version
 #
-# Check_MK software version
+# Check_MK software version.
 checkmk_server__version: '1.2.8p6'
 
 
 # .. envvar:: checkmk_server__version_label
 #
-# Check_MK version label used with the :command:`omd` tool
+# Check_MK version label used with the :command:`omd` tool.
 checkmk_server__version_label: '{{ checkmk_server__version }}.cre'
 
 
@@ -85,7 +85,7 @@ checkmk_server__prerequisite_packages: [ 'apache2' ]
 
 # .. envvar:: checkmk_server__site
 #
-# Check_MK site name
+# Check_MK site name. Set to `False` to disable site configuration.
 checkmk_server__site: 'debops'
 
 
@@ -100,13 +100,15 @@ checkmk_server__hostname: '{{ ansible_fqdn }}'
 # Check_MK server site URL.
 checkmk_server__site_url: '{{ ("https://" if checkmk_server__pki else "http://") +
                                checkmk_server__hostname + "/" +
-                               checkmk_server__site }}'
+                               checkmk_server__site
+                              if checkmk_server__site|d() else "" }}'
 
 
 # .. envvar:: checkmk_server__webapi_url
 #
 # WebAPI URL of monitoring site.
-checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py" }}'
+checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
+                                if checkmk_server__site|d() else "" }}'
 
 
 # .. envvar:: checkmk_server__runtime_config
@@ -309,7 +311,7 @@ checkmk_server__multisite_custom_users: {}
 
 # .. envvar:: checkmk_server__multisite_user_defaults
 #
-# Default user properties set for local users defined in
+# Default user properties for local users defined in
 # :envvar:`checkmk_server__multisite_users`
 checkmk_server__multisite_user_defaults:
   force_authuser: False
@@ -328,7 +330,7 @@ checkmk_server__multisite_user_connections: []
 
 # .. envvar:: checkmk_server__multisite_user_connection_defaults
 #
-# Default properties set for LDAP user connections defined in
+# Default properties for LDAP user connections defined in
 # :envvar:`checkmk_server__multisite_user_connections`
 checkmk_server__multisite_user_connection_defaults:
   active_plugins: {}
@@ -405,7 +407,7 @@ checkmk_server__site_cfg_rules: '{{ checkmk_server__site_upstream_rules }}'
 
 # .. envvar:: checkmk_server__site_upstream_rules
 #
-# Default upstream rule definitions
+# Default upstream rule definitions.
 checkmk_server__site_upstream_rules:
   - name: 'bulkwalk_hosts'
     tags: [ 'snmp', '!snmp-v1' ]
