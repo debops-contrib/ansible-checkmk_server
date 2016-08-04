@@ -41,9 +41,9 @@ Manually setup Monitoring Site
 ------------------------------
 
 By default the role will setup a monitoring site named according to
-:env:`checkmk_server__site`. Sometimes it might be desired to not let Ansible
-generate a site configuration by itself but use the :program:`omd` tool
-manually instead. This can be achieved by simply setting::
+:envvar:`checkmk_server__site`. Sometimes it might be desired to not let
+Ansible generate a site configuration by itself but use the :program:`omd`
+tool manually instead. This can be achieved by simply setting::
 
     checkmk_server__site: False
 
