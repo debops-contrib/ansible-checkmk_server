@@ -85,7 +85,7 @@ checkmk_server__prerequisite_packages: [ 'apache2' ]
 
 # .. envvar:: checkmk_server__site
 #
-# Check_MK site name.
+# Check_MK site name. Set to `False` to disable site configuration.
 checkmk_server__site: 'debops'
 
 
@@ -100,13 +100,15 @@ checkmk_server__hostname: '{{ ansible_fqdn }}'
 # Check_MK server site URL.
 checkmk_server__site_url: '{{ ("https://" if checkmk_server__pki else "http://") +
                                checkmk_server__hostname + "/" +
-                               checkmk_server__site }}'
+                               checkmk_server__site
+                              if checkmk_server__site|d() else "" }}'
 
 
 # .. envvar:: checkmk_server__webapi_url
 #
 # WebAPI URL of monitoring site.
-checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py" }}'
+checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
+                                if checkmk_server__site|d() else "" }}'
 
 
 # .. envvar:: checkmk_server__runtime_config
