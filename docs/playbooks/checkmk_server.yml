@@ -1,16 +1,15 @@
 ---
 
 - name: Manage Check_MK server
-  hosts: [ 'debops_service_checkmk_server', 'debops_checkmk_server' ]
+  hosts: [ 'debops_service_checkmk_server' ]
   become: True
 
   roles:
 
     - role: debops.ferm
-      tags: [ 'depend::ferm', 'depend::ferm:checkmk_server', 'depend-of::checkmk_server', 'type::dependency' ]
+      tags: [ 'role::ferm' ]
       ferm__dependent_rules:
         - '{{ checkmk_server__ferm_dependent_rules }}'
 
     - role: debops-contrib.checkmk_server
       tags: [ 'role::checkmk_server' ]
-

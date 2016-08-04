@@ -8,13 +8,13 @@
 
 # .. envvar:: checkmk_server__version
 #
-# Check_MK software version
+# Check_MK software version.
 checkmk_server__version: '1.2.8p6'
 
 
 # .. envvar:: checkmk_server__version_label
 #
-# Check_MK version label used with the :command:`omd` tool
+# Check_MK version label used with the :command:`omd` tool.
 checkmk_server__version_label: '{{ checkmk_server__version }}.cre'
 
 
@@ -85,7 +85,7 @@ checkmk_server__prerequisite_packages: [ 'apache2' ]
 
 # .. envvar:: checkmk_server__site
 #
-# Check_MK site name
+# Check_MK site name.
 checkmk_server__site: 'debops'
 
 
@@ -309,7 +309,7 @@ checkmk_server__multisite_custom_users: {}
 
 # .. envvar:: checkmk_server__multisite_user_defaults
 #
-# Default user properties set for local users defined in
+# Default user properties for local users defined in
 # :envvar:`checkmk_server__multisite_users`
 checkmk_server__multisite_user_defaults:
   force_authuser: False
@@ -328,7 +328,7 @@ checkmk_server__multisite_user_connections: []
 
 # .. envvar:: checkmk_server__multisite_user_connection_defaults
 #
-# Default properties set for LDAP user connections defined in
+# Default properties for LDAP user connections defined in
 # :envvar:`checkmk_server__multisite_user_connections`
 checkmk_server__multisite_user_connection_defaults:
   active_plugins: {}
@@ -405,7 +405,7 @@ checkmk_server__site_cfg_rules: '{{ checkmk_server__site_upstream_rules }}'
 
 # .. envvar:: checkmk_server__site_upstream_rules
 #
-# Default upstream rule definitions
+# Default upstream rule definitions.
 checkmk_server__site_upstream_rules:
   - name: 'bulkwalk_hosts'
     tags: [ 'snmp', '!snmp-v1' ]

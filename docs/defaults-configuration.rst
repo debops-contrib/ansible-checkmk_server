@@ -143,7 +143,7 @@ Create custom administrator account with random password::
 
       bob:
         alias: 'Bob Admin'
-        password: '{{ lookup("password", "credentials/check_mk/" + checkmk_server__site + "/bob/password length=15") }}'
+        password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/bob/password length=15") }}'
         roles: [ 'admin' ]
 
 
