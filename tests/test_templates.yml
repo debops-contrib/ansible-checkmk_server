@@ -110,6 +110,19 @@
               - 4.0
           period: 'wday'
           horizon: 90
+      # rule with tuple value
+      - name: 'snmp_communities'
+        filename: 'rules.mk'
+        template: 'rule'
+        tags: [ 'imm', 'snmp' ]
+        value:
+          - authPriv
+          - md5
+          - snmpuser
+          - snmppass
+          - DES
+          - snmppass
+        description: 'IBM IMM SNMP Credentials'
 
   tasks:
     - template:

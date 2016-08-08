@@ -76,6 +76,9 @@ checkmk_server__confd_variable_map:
   service_groups:
     filename: 'global.mk'
     template: 'rule'
+  snmp_community:
+    filename: 'rules.mk'
+    template: 'rule'
   snmp_timing:
     filename: 'rules.mk'
     template: 'rule'
