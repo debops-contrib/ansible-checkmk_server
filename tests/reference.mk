@@ -73,3 +73,15 @@ checkgroup_parameters.setdefault('cpu_load', [])
 checkgroup_parameters['cpu_load'] = [
   ( {'levels_upper': ('absolute', (2.0, 4.0)), 'period': 'wday', 'horizon': 90}, [], ALL_HOSTS ),
 ] + checkgroup_parameters['cpu_load']
+
+
+snmp_communities = [
+  ( ('authPriv', 'md5', 'snmpuser', 'snmppass', 'DES', 'snmppass'), ['imm', 'snmp', ], ALL_HOSTS, {'description': u'IBM IMM SNMP Credentials'} ),
+] + snmp_communities
+
+
+checkgroup_parameters.setdefault('threads', [])
+
+checkgroup_parameters['threads'] = [
+  ( (4000, 8000), ['physical', ], ALL_HOSTS, {'description': u'Physical servers need to handle a lot of threads'} ),
+] + checkgroup_parameters['threads']

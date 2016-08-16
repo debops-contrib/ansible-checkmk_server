@@ -105,11 +105,24 @@
         template: 'rule_w_default'
         value:
           levels_upper:
-            - absolute:
-              - 2.0
-              - 4.0
+            - absolute: [ 2.0, 4.0 ]
           period: 'wday'
           horizon: 90
+      # rule with tuple value
+      - name: 'snmp_communities'
+        filename: 'rules.mk'
+        template: 'rule'
+        tags: [ 'imm', 'snmp' ]
+        value: [ 'authPriv', 'md5', 'snmpuser', 'snmppass', 'DES', 'snmppass' ]
+        description: 'IBM IMM SNMP Credentials'
+      # rule_w_default with tuple value
+      - name: 'checkgroup_parameters'
+        element: 'threads'
+        filename: 'rules.mk'
+        template: 'rule_w_default'
+        value: [ 4000, 8000 ]
+        tags: [ 'physical' ]
+        description: 'Physical servers need to handle a lot of threads'
 
   tasks:
     - template:

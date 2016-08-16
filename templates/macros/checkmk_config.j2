@@ -283,7 +283,7 @@ if {{ _name }} == None:
       (_value | length > 0) and
       (_value != 'None') %}
 {%   set _rule = "'" + _value + "'" %}
-{% elif (_value is mapping) %}
+{% elif (_value is mapping) or (_value is sequence) %}
 {#
  #   Remove unicode hints for dictionary keys.
  #   Substitute lists with tuples: ['foo', 'bar'] -> ('foo', 'bar')
