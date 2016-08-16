@@ -156,6 +156,13 @@ checkmk_server__ssh_arguments: '-o BatchMode=yes -o StrictHostKeyChecking=no -o 
 # Multisite Web Configuration
 # ---------------------------
 
+# .. envvar:: checkmk_server__multisite_slave
+#
+# Indicate if this site is a distributed monitoring slave which receives the
+# Check_MK configuration from another Check_MK server instance.
+checkmk_server__multisite_slave: False
+
+
 # .. envvar:: checkmk_server__multisite_config_path
 #
 # Configuration path for Check_MK multisite configurations. Relative to the
