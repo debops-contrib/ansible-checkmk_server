@@ -117,7 +117,7 @@ checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
 # these values will shutdown Check_MK for reconfiguration.
 checkmk_server__runtime_config:
   - var: 'ADMIN_MAIL'
-    value: 'hostmaster@{{ ansible_domain }}'
+    value: 'hostmaster@{{ ansible_domain if ansible_domain else ansible_hostname }}'
   - var: 'CORE'
     value: 'icinga'
 
