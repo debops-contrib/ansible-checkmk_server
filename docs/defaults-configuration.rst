@@ -384,3 +384,94 @@ This will synchronize all users in from the DN ``ou=users,dc=example,dc=com``
 to WATO, fills the user's alias property with the value from the ``gecos``
 LDAP attribute and assign the admin role to the members of the 'wato-admin'
 group.
+
+
+.. _checkmk_server__ref_distributed_sites:
+
+checkmk_server__distributed_sites
+---------------------------------
+
+This setting will define Check_MK multisite connections to other Check_MK
+monitoring sites. Each site entry is a nested YAML dictionary with the site
+name as top key. The following sub keys are supported as site properties.
+
+``alias``
+  An alias or description of the site, required.
+
+``disabled``
+  Optional. Temporarily disable this connection. Defaults to ``False``.
+
+``disable_wato``
+  Optional. Disable configuration via WATO on this site. Defaults to ``True``.
+
+``insecure``
+  Optional. Ignore SSL certificate errors. Defaults to ``False``.
+
+``multisiteurl``
+  Optional. URL of the remote Check_MK site including ``/check_mk/``. This
+  will be used by the main site to fetch resources from this site.
+
+``password``
+  Optional. User password for user defined in ``item.username`` used for
+  authentication on this site.
+
+``persist``
+  Optional. Use persistent connections to this site. Defaults to ``False``.
+
+``replicate_ec``
+  Optional. Replicate Event Console configuration to this site. Defaults to
+  ``False``.
+
+``replicate_mkps``
+  Optional. Replicate extensions (MKPs and files in :file:`~/local/`).
+  Defaults to ``True``.
+
+``replication``
+  Optional. WATO replication allows you to manage several monitoring sites
+  with a logically centralized WATO. Slave sites receive their configuration
+  from master sites. By default this value is unset which means that the there
+  is no replication with this site. Set this to ``slave`` to enable
+  configuration push to this site.
+
+``socket``
+  Optional. Livestatus connection socket. By default this value is unset which
+  corresponds to the local site. In case this is a foreign site on localhost
+  or a remote site, this value must be set to a TCP or UNIX socket such as
+  ``tcp:<hostname>:<port>`` or ``unix:<path>``. When connecting to remote site
+  make sure that Livestatus over TCP is activated there.
+
+``status_host``
+  Optional. By specifying a status host for each non-local connection you
+  prevent Multisite from running into timeouts when remote sites do not
+  respond. The value must be specified as ``[ '<site>', '<hostname>' ]``.
+  By default this value is unset. Check the `upstream documentation`_ for
+  more information.
+
+.. _upstream documentation: https://mathias-kettner.com/checkmk_multisite_statushost.html
+
+``timeout``
+  Optional. Connect timeout in seconds before this site is considered to be
+  unreachable. Defaults to ``10``.
+
+``url_prefix``
+  Optional. The URL prefix will be prepended to links of addons like
+  PNP4Nagios or the classical Icinga GUI when a link to such applications
+  points to a host or service on that site.
+
+``username``
+  Optional. User name used to synchronize configuration data with this site
+  in case ``item.replication`` is set to ``slave``. Defaults to ``sitesync``.
+
+``user_login``
+  Optional. Allow users to directly directly login into the Web GUI of this
+  site. Defaults to ``True``.
+
+The default values for the distributed sites configuration are defined in
+:envvar:`checkmk_server__distributed_sites_defaults` and can be overwritten
+via Ansible inventory.
+
+....
+
+A lot of parameter descriptions are copied from the upstream source code which is copyrighted
+by `Mathias Kettner <mk@mathias-kettner.de>`_ and released under the
+`GNU Public License v2 <https://tldrlegal.com/license/gnu-general-public-license,-version2-%28gpl-2%29>`_.

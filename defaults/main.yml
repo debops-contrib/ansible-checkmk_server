@@ -363,7 +363,7 @@ checkmk_server__multisite_user_connection_defaults:
 # .. envvar:: checkmk_server__distributed_sites
 #
 # Distributed monitoring sites configuration. For more details see
-# https://mathias-kettner.com/checkmk_multisite_setup.html.
+# :ref:`checkmk_server__ref_distributed_sites`
 checkmk_server__distributed_sites: {}
 
 
