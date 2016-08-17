@@ -95,6 +95,17 @@
   include: site.yml
   when: checkmk_server__site|d()
 
+- name: Check distributed site state
+  stat:
+    path: '{{ checkmk_server__site_home }}/{{ checkmk_server__site_config_path }}/distributed_wato.mk'
+  register: checkmk_server__multisite_distributed_wato_mk
+
+- name: Monitoring site user authentication
+  include: users.yml
+  when: checkmk_server__site|d() and
+        (not checkmk_server__multisite_distributed_wato_mk.stat.exists and
+         checkmk_server__multisite_slave|d())
+
 - name: Manage WATO and monitoring rules
   include: wato.yml
   when: not checkmk_server__multisite_slave|d()

@@ -308,6 +308,10 @@ checkmk_server__multisite_debops_users:
     alias: 'Automation User used by Ansible'
     automation_secret: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/ansible/secret") }}'
     roles: [ 'api' ]
+  sitesync:
+    alias: 'Synchronization User for Multisite'
+    password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
+    roles: [ 'admin' ]
 
 
 # .. envvar:: checkmk_server__multisite_custom_users:
@@ -367,6 +371,8 @@ checkmk_server__distributed_sites: {}
 #
 # Default sites properties for distributed monitoring.
 checkmk_server__distributed_sites_defaults:
+  user: 'sitesync'
+  password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
   disabled: False
   disable_wato: True
   insecure: False
