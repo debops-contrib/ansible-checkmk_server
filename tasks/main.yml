@@ -103,8 +103,9 @@
 - name: Monitoring site user authentication
   include: users.yml
   when: checkmk_server__site|d() and
-        (not checkmk_server__multisite_distributed_wato_mk.stat.exists and
-         checkmk_server__multisite_slave|d())
+        ((checkmk_server__multisite_slave|d() and
+          not checkmk_server__multisite_distributed_wato_mk.stat.exists) or
+         not checkmk_server__multisite_slave|d())
 
 - name: Manage WATO and monitoring rules
   include: wato.yml
