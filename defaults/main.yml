@@ -356,6 +356,31 @@ checkmk_server__multisite_user_connection_defaults:
   user_scope: 'sub'
 
 
+# .. envvar:: checkmk_server__distributed_sites
+#
+# Distributed monitoring sites configuration. For more details see
+# https://mathias-kettner.com/checkmk_multisite_setup.html.
+checkmk_server__distributed_sites: {}
+
+
+# .. envvar:: checkmk_server__distributed_sites_defaults
+#
+# Default sites properties for distributed monitoring.
+checkmk_server__distributed_sites_defaults:
+  disabled: False
+  disable_wato: True
+  insecure: False
+  multisiteurl: ''
+  persist: False
+  replicate_ec: False
+  replicate_mkps: True
+  replication: ''
+  status_host: None
+  timeout: 10
+  url_prefix: ''
+  user_login: True
+
+
 # ----------------
 # Monitoring Rules
 # ----------------

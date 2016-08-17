@@ -61,6 +61,47 @@
   with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
+- name: Login on slave sites
+  uri:
+    url: '{{ checkmk_server__distributed_sites[item].multisiteurl }}/login.py'
+    method: POST
+    body: '{{ [ "_login=1",
+                "_username=" + (checkmk_server__distributed_sites[item].username if "username" in checkmk_server__distributed_sites[item]
+                                                                                 else checkmk_server__distributed_sites_defaults.username),
+                "_password=" + (checkmk_server__distributed_sites[item].password if "password" in checkmk_server__distributed_sites[item]
+                                                                                 else checkmk_server__distributed_sites_defaults.password),
+                "_origtarget=automation_login.py",
+                "_plain_error=1" ] | join("&") }}'
+    force_basic_auth: yes
+    user: '{{ checkmk_server__distributed_sites[item].username if "username" in checkmk_server__distributed_sites[item]
+                                                               else checkmk_server__distributed_sites_defaults.username }}'
+    password: '{{ checkmk_server__distributed_sites[item].password if "password" in checkmk_server__distributed_sites[item]
+                                                                   else checkmk_server__distributed_sites_defaults.password }}'
+    status_code: 302
+    validate_certs: '{{ not checkmk_server__distributed_sites[item].insecure }}'
+  when: not item == checkmk_server__site
+  with_items: '{{ checkmk_server__distributed_sites }}'
+  register: checkmk_server__register_multisite_login
+
+- name: Get Multisite distribution secrets
+  uri:
+    url: '{{ item.location }}'
+    HEADER_Cookie: '{{ item.set_cookie }}'
+    return_content: True
+    validate_certs: '{{ item.invocation.module_args.validate_certs }}'
+  when: not item | skipped
+  with_items: '{{ checkmk_server__register_multisite_login.results }}'
+  register: checkmk_server__register_multisite_automation_login
+  no_log: True
+
+- name: Generate distributed monitoring configuration
+  template:
+    src: 'etc/check_mk/multisite.d/sites.mk.j2'
+    dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/sites.mk'
+    owner: '{{ checkmk_server__user }}'
+    group: '{{ checkmk_server__group }}'
+  tags: [ 'role::checkmk_server:multisite' ]
+
 - name: Generate Check_MK WATO multisite definitions
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'

@@ -101,3 +101,8 @@ checkmk_server__multisite_variable_map:
 # Ansible user_connections properties which are not set in the
 # user_connections.mk
 checkmk_server__ansible_user_connections_properties: [ 'binddn', 'bindpw' ]
+
+# Distributed monitoring properties for local site
+checkmk_server__local_site_properties: [ 'disable_wato', 'disabled',
+  'insecure', 'multisiteurl', 'persist', 'replicate_ec', 'replication',
+  'timeout', 'user_login' ]

@@ -270,6 +270,23 @@ if {{ _name }} == None:
 
 
 {#
+ # The tmpl_format__dict_multiline() macro will format a dictionary with every
+ # key on a new line. The regex_replace() filters will make sure that the
+ # strings properly aligned and never formatted as unicode strings.
+ #}
+
+{% macro tmpl_format__dict_multiline(_dict)
+%}{{ _dict | pprint |
+     replace("  '", " '") |
+     replace("u'None'", "None") |
+     replace("u''", "''") |
+     regex_replace("([\[\{])u'", "\\1'") |
+     regex_replace("(: )u'", "\\1'") |
+     regex_replace("[ ]? u'", " '") }}{%
+   endmacro %}
+
+
+{#
  # The tmpl_format__value() macro will format an input value as required for
  # a Check_MK rule.
  #}

@@ -1,0 +1,43 @@
+{% import 'checkmk_config.j2' as macros with context %}
+# {{ ansible_managed }}
+# encoding: utf-8
+
+{% set _sites = {} %}
+{% if checkmk_server__distributed_sites|d({}) %}
+{%   if not checkmk_server__site in checkmk_server__distributed_sites %}
+{%     set _ = _sites.update({checkmk_server__site: {}}) %}
+{%     set _ = _sites[checkmk_server__site].update({ 'alias': 'Local site ' + checkmk_server__site }) %}
+{%     for _prop in checkmk_server__local_site_properties|d([]) %}
+{%       set _ = _sites[checkmk_server__site].update({ _prop: checkmk_server__distributed_sites_defaults[_prop] }) %}
+{%     endfor %}
+{%   endif %}
+{%   for _site in checkmk_server__distributed_sites %}
+{%     if not _site in _sites %}
+{%       set _ = _sites.update({_site: {}}) %}
+{%       for _key, _value in checkmk_server__distributed_sites[_site].items() %}
+{%         if _key not in [ 'username', 'password' ] %}
+{%           set _ = _sites[_site].update({ _key: _value }) %}
+{%         endif %}
+{%       endfor %}
+{%       if _site == checkmk_server__site %}
+{%         set _site_properties = checkmk_server__local_site_properties %}
+{%       else %}
+{%         set _site_properties = checkmk_server__distributed_sites_defaults | difference([ 'username', 'password' ]) %}
+{%       endif %}
+{%       for _prop in _site_properties %}
+{%         if _prop not in _sites[_site] %}
+{%           set _ = _sites[_site].update({ _prop: checkmk_server__distributed_sites_defaults[_prop] }) %}
+{%         endif %}
+{%       endfor %}
+{%     endif %}
+{%   endfor %}
+{%   for _result in checkmk_server__register_multisite_automation_login.results|d({}) %}
+{%     if not _result | skipped %}
+{%       set _ = _sites[_result.item.item].update({ 'secret': _result.content|replace("'", "") }) %}
+{%     endif %}
+{%   endfor %}
+{% endif %}
+{% if _sites %}
+sites = \
+{{ macros.tmpl_format__dict_multiline(_sites) }}
+{% endif %}
