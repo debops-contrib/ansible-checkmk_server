@@ -50,7 +50,7 @@
 
 - name: Get Check_MK site runtime configuration
   command: omd config '{{ checkmk_server__site }}' show '{{ item.var }}'
-  with_items: '{{ checkmk_server__runtime_config }}'
+  with_items: '{{ checkmk_server__omd_config }}'
   register: checkmk_server_register_runtime
   changed_when: False
   always_run: True

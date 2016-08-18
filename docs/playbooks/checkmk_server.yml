@@ -6,6 +6,12 @@
 
   roles:
 
+    - role: debops.etc_services
+      tags: [ 'role::etc_services' ]
+      etc_services__dependent_list:
+        - '{{ checkmk_server__etc_services__dependent_list }}'
+      when: checkmk_server__multisite_livestatus|d()
+
     - role: debops.ferm
       tags: [ 'role::ferm' ]
       ferm__dependent_rules:
