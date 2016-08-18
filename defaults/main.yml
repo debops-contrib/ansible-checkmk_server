@@ -156,6 +156,13 @@ checkmk_server__ssh_arguments: '-o BatchMode=yes -o StrictHostKeyChecking=no -o 
 # Multisite Web Configuration
 # ---------------------------
 
+# .. envvar:: checkmk_server__multisite_slave
+#
+# Indicate if this site is a distributed monitoring slave which receives the
+# Check_MK configuration from another Check_MK server instance.
+checkmk_server__multisite_slave: False
+
+
 # .. envvar:: checkmk_server__multisite_config_path
 #
 # Configuration path for Check_MK multisite configurations. Relative to the
@@ -301,6 +308,10 @@ checkmk_server__multisite_debops_users:
     alias: 'Automation User used by Ansible'
     automation_secret: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/ansible/secret") }}'
     roles: [ 'api' ]
+  sitesync:
+    alias: 'Synchronization User for Multisite'
+    password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
+    roles: [ 'admin' ]
 
 
 # .. envvar:: checkmk_server__multisite_custom_users:
@@ -347,6 +358,33 @@ checkmk_server__multisite_user_connection_defaults:
   user_dn: ''
   user_id_umlauts: 'keep'
   user_scope: 'sub'
+
+
+# .. envvar:: checkmk_server__distributed_sites
+#
+# Distributed monitoring sites configuration. For more details see
+# :ref:`checkmk_server__ref_distributed_sites`
+checkmk_server__distributed_sites: {}
+
+
+# .. envvar:: checkmk_server__distributed_sites_defaults
+#
+# Default sites properties for distributed monitoring.
+checkmk_server__distributed_sites_defaults:
+  user: 'sitesync'
+  password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
+  disabled: False
+  disable_wato: True
+  insecure: False
+  multisiteurl: ''
+  persist: False
+  replicate_ec: False
+  replicate_mkps: True
+  replication: ''
+  status_host: None
+  timeout: 10
+  url_prefix: ''
+  user_login: True
 
 
 # ----------------

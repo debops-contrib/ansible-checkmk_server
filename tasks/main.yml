@@ -91,8 +91,25 @@
   when: not checkmk_server__pki|d(False) and checkmk_server_register_mod_ssl.stat.exists
   notify: [ 'Reload apache2' ]
 
-- include: site.yml
+- name: Manage Check_MK site
+  include: site.yml
   when: checkmk_server__site|d()
+
+- name: Check distributed site state
+  stat:
+    path: '{{ checkmk_server__site_home }}/{{ checkmk_server__site_config_path }}/distributed_wato.mk'
+  register: checkmk_server__multisite_distributed_wato_mk
+
+- name: Monitoring site user authentication
+  include: users.yml
+  when: checkmk_server__site|d() and
+        ((checkmk_server__multisite_slave|d() and
+          not checkmk_server__multisite_distributed_wato_mk.stat.exists) or
+         not checkmk_server__multisite_slave|d())
+
+- name: Manage WATO and monitoring rules
+  include: wato.yml
+  when: not checkmk_server__multisite_slave|d()
 
 - name: Make sure that local fact directory exists
   file:
