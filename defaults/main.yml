@@ -163,7 +163,7 @@ checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
 checkmk_server__omd_config: '{{
   checkmk_server__omd_config_email +
   checkmk_server__omd_config_core +
-  checkmk_server__omd_config_livestatus if checkmk_server__multisite_livestatus|d() else []
+  (checkmk_server__omd_config_livestatus if checkmk_server__multisite_livestatus|d() else [])
 }}'
 
 

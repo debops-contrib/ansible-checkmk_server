@@ -48,10 +48,10 @@
   when: checkmk_server_register_cron.stat.exists
   notify: [ 'Restart Check_MK' ]
 
-- name: Get Check_MK site runtime configuration
+- name: Query OMD configuration
   command: omd config '{{ checkmk_server__site }}' show '{{ item.var }}'
   with_items: '{{ checkmk_server__omd_config }}'
-  register: checkmk_server_register_runtime
+  register: checkmk_server__register_omd_config
   changed_when: False
   always_run: True
   ignore_errors: '{{ ansible_check_mode }}'
@@ -62,19 +62,19 @@
     state: stopped
   when: (not item.stdout == item.item.value) or
         checkmk_server__fact_update|d(False)
-  with_items: '{{ checkmk_server_register_runtime.results
-                  if not "failed" in checkmk_server_register_runtime else [] }}'
+  with_items: '{{ checkmk_server__register_omd_config.results
+                  if not "failed" in checkmk_server__register_omd_config else [] }}'
 
 - name: Run Check_MK site update
   command: omd --force update '{{ checkmk_server__site }}'
   ignore_errors: '{{ ansible_check_mode }}'
   when: checkmk_server__fact_update|d(False)
 
-- name: Set Check_MK site runtime properties
+- name: Set OMD site properties
   command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
   when: not item.stdout == item.item.value
-  with_items: '{{ checkmk_server_register_runtime.results
-                  if not "failed" in checkmk_server_register_runtime else [] }}'
+  with_items: '{{ checkmk_server__register_omd_config.results
+                  if not "failed" in checkmk_server__register_omd_config else [] }}'
 
 - name: Enable and start Check_MK site
   service:
