@@ -9,6 +9,23 @@ and examples for them.
    :local:
    :depth: 1
 
+
+.. _checkmk_server__ref_omd_config:
+
+checkmk_server__omd_config
+--------------------------
+
+:program:`omd` is a command line utility which is used to manage Check_MK
+monitoring sites. Some basic configuration options of the site will be
+set via this tool. These options are defined in
+:envvar:`checkmk_server__omd_config` which is a list of YAML dictionaries,
+each with two key/value pairs defining the OMD property to be set. One key
+has to be ``var`` with the variable name to be set as value. The other
+key has to be ``value`` with the variable value to be set as value.
+
+See :envvar:`checkmk_server__omd_config_core` for an example.
+
+
 .. _checkmk_server__sshkeys:
 
 checkmk_server__sshkeys

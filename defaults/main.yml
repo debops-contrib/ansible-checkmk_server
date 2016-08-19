@@ -158,7 +158,8 @@ checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
 # .. envvar:: checkmk_server__omd_config
 #
 # Check_MK site configuration set via :command:`omd config`. Changing these
-# values will shutdown Check_MK during reconfiguration.
+# values will shutdown Check_MK during reconfiguration. Check
+# :ref:`checkmk_server__ref_omd_config` for more details.
 checkmk_server__omd_config: '{{
   checkmk_server__omd_config_email +
   checkmk_server__omd_config_core +
