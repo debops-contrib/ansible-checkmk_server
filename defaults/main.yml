@@ -40,7 +40,7 @@ checkmk_server__patches:
 # Firewall configuration using the ``debops.ferm`` Ansible role.
 checkmk_server__ferm_dependent_rules: '{{
   checkmk_server__ferm_web_rules +
-  checkmk_server__ferm_livestatus_rules if checkmk_server__multisite_livestatus else ""
+  (checkmk_server__ferm_livestatus_rules if checkmk_server__multisite_livestatus else [])
 }}'
 
 
