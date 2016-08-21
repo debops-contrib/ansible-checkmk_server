@@ -63,7 +63,7 @@
   when: (not item.stdout == item.item.value) or
         checkmk_server__fact_update|d(False)
   with_items: '{{ checkmk_server_register_runtime.results
-                  if "results" in checkmk_server_register_runtime else [] }}'
+                  if not "failed" in checkmk_server_register_runtime else [] }}'
 
 - name: Run Check_MK site update
   command: omd --force update '{{ checkmk_server__site }}'
@@ -74,7 +74,7 @@
   command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
   when: not item.stdout == item.item.value
   with_items: '{{ checkmk_server_register_runtime.results
-                  if "results" in checkmk_server_register_runtime else [] }}'
+                  if not "failed" in checkmk_server_register_runtime else [] }}'
 
 - name: Enable and start Check_MK site
   service:
