@@ -10,6 +10,7 @@
 
 - name: Set new default version
   command: omd setversion '{{ checkmk_server__version_label }}'
+  ignore_errors: '{{ ansible_check_mode }}'
   when: (checkmk_server_register_default.stat.lnk_source |
          basename) != checkmk_server__version_label
 
@@ -23,11 +24,13 @@
   register: checkmk_server_register_site_version
   changed_when: False
   always_run: True
+  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Trigger site version update
   set_fact:
     checkmk_server__fact_update: True
   always_run: True
+  ignore_errors: '{{ ansible_check_mode }}'
   when: checkmk_server__update|d(False)|bool and
         ((checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] |
          version_compare(checkmk_server__version, "<"))
@@ -51,6 +54,7 @@
   register: checkmk_server_register_runtime
   changed_when: False
   always_run: True
+  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Shutdown Check_MK site (if required)
   service:
@@ -58,22 +62,26 @@
     state: stopped
   when: (not item.stdout == item.item.value) or
         checkmk_server__fact_update|d(False)
-  with_items: '{{ checkmk_server_register_runtime.results }}'
+  with_items: '{{ checkmk_server_register_runtime.results
+                  if "results" in checkmk_server_register_runtime else [] }}'
 
 - name: Run Check_MK site update
   command: omd --force update '{{ checkmk_server__site }}'
+  ignore_errors: '{{ ansible_check_mode }}'
   when: checkmk_server__fact_update|d(False)
 
 - name: Set Check_MK site runtime properties
   command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
   when: not item.stdout == item.item.value
-  with_items: '{{ checkmk_server_register_runtime.results }}'
+  with_items: '{{ checkmk_server_register_runtime.results
+                  if "results" in checkmk_server_register_runtime else [] }}'
 
 - name: Enable and start Check_MK site
   service:
     name: 'check-mk-raw-{{ checkmk_server__version if checkmk_server__fact_update|d() else (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
     state: started
     enabled: yes
+  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Create .ssh directory
   file:
@@ -97,6 +105,7 @@
     path: '{{ checkmk_server__site_home }}/.ssh/{{ item }}'
     owner: '{{ checkmk_server__user }}'
     group: '{{ checkmk_server__group }}'
+  ignore_errors: '{{ ansible_check_mode }}'
   with_items: [ 'id_rsa', 'id_rsa.pub' ]
   when: checkmk_server__sshkeys|d() and
         ("generate_keypair" in checkmk_server__sshkeys|d() and
@@ -125,5 +134,6 @@
 - name: Read SSH public key
   command: 'cat {{ checkmk_server__site_home }}/.ssh/id_rsa.pub'
   changed_when: False
+  ignore_errors: '{{ ansible_check_mode }}'
   register: checkmk_server__register_ssh_public_key
   when: checkmk_server__sshkeys|d()

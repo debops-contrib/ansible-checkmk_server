@@ -20,9 +20,10 @@
                                                                    else checkmk_server__distributed_sites_defaults.password }}'
     status_code: 302
     validate_certs: '{{ not checkmk_server__distributed_sites[item].insecure }}'
-  when: not item == checkmk_server__site
-  with_items: '{{ checkmk_server__distributed_sites }}'
   register: checkmk_server__register_multisite_login
+  ignore_errors: '{{ ansible_check_mode }}'
+  when: not item == checkmk_server__site
+  with_items: '{{ checkmk_server__distributed_sites|d([]) }}'
 
 - name: Get Multisite distribution secrets
   uri:
@@ -30,10 +31,11 @@
     HEADER_Cookie: '{{ item.set_cookie }}'
     return_content: True
     validate_certs: '{{ item.invocation.module_args.validate_certs }}'
-  when: not item | skipped
-  with_items: '{{ checkmk_server__register_multisite_login.results }}'
   register: checkmk_server__register_multisite_automation_login
   no_log: True
+  when: not item | skipped
+  with_items: '{{ checkmk_server__register_multisite_login.results
+                  if "results" in checkmk_server__register_multisite_login else [] }}'
 
 - name: Generate distributed monitoring configuration
   template:

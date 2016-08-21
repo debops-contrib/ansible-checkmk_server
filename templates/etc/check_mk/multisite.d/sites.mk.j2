@@ -31,11 +31,13 @@
 {%       endfor %}
 {%     endif %}
 {%   endfor %}
-{%   for _result in checkmk_server__register_multisite_automation_login.results|d({}) %}
-{%     if not _result | skipped %}
-{%       set _ = _sites[_result.item.item].update({ 'secret': _result.content|replace("'", "") }) %}
-{%     endif %}
-{%   endfor %}
+{%   if 'results' in checkmk_server__register_multisite_automation_login %}
+{%     for _result in checkmk_server__register_multisite_automation_login.results|d({}) %}
+{%       if not _result | skipped %}
+{%         set _ = _sites[_result.item.item].update({ 'secret': _result.content|replace("'", "") }) %}
+{%       endif %}
+{%     endfor %}
+{%   endif %}
 {% endif %}
 {% if _sites %}
 sites = \
