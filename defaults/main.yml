@@ -76,7 +76,7 @@ checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_serv
 #
 # List of prerequisite packages which must be available before installing
 # the Check_MK RAW package
-checkmk_server__prerequisite_packages: [ 'apache2' ]
+checkmk_server__prerequisite_packages: [ 'apache2', 'python-passlib' ]
 
 
 # ---------------------------
