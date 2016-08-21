@@ -61,7 +61,7 @@ checkmk_server__ferm_web_rules:
 # Firewall configuration for Multisite Livestatus access.
 checkmk_server__ferm_livestatus_rules:
   - type: 'accept'
-    dport: '{{ checkmk_server__livestatus_port }}'
+    dport: [ '{{ checkmk_server__livestatus_port|string }}' ]
     saddr: '{{ checkmk_server__livestatus_allow }}'
     accept_any: True
     weight: '40'
