@@ -43,6 +43,7 @@
     src: '{{ item.patch }}'
     dest: '{{ item.file }}'
     basedir: '/'
+  ignore_errors: '{{ ansible_check_mode }}'
   with_items: '{{ checkmk_server__patches }}'
   when: checkmk_server_register_apt_install.changed or
         checkmk_server_register_deb_install.changed
