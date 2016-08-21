@@ -25,6 +25,7 @@
   apt:
     deb: '{{ "/var/cache/apt/archives/" + (checkmk_server__raw_package | basename) if checkmk_server_register_download|d() else checkmk_server__raw_package }}'
     state: present
+  ignore_errors: '{{ ansible_check_mode }}'
   register: checkmk_server_register_deb_install
   when: (not checkmk_server_register_version.stdout) and
         ((checkmk_server__raw_package | splitext)[1] == '.deb')

@@ -12,6 +12,7 @@
   register: checkmk_server__register_users_mk
   changed_when: False
   always_run: True
+  ignore_errors: '{{ ansible_check_mode }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
 - name: Read local contacts definition
@@ -19,12 +20,17 @@
   register: checkmk_server__register_contacts_mk
   changed_when: False
   always_run: True
+  ignore_errors: '{{ ansible_check_mode }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
 - name: Set local Check_MK configuration facts
   set_fact:
-    checkmk_server__fact_local_users: '{{ checkmk_server__register_users_mk.stdout }}'
-    checkmk_server__fact_local_contacts: '{{ checkmk_server__register_contacts_mk.stdout }}'
+    checkmk_server__fact_local_users: '{{ checkmk_server__register_users_mk.stdout
+                                          if checkmk_server__register_users_mk.stdout|length > 0
+                                          else {} }}'
+    checkmk_server__fact_local_contacts: '{{ checkmk_server__register_contacts_mk.stdout
+                                             if checkmk_server__register_contacts_mk.stdout|length > 0
+                                             else {} }}'
   always_run: True
   tags: [ 'role::checkmk_server:multisite' ]
 
@@ -40,6 +46,7 @@
                   if "password" in checkmk_server__multisite_users[item]
                   else checkmk_server__multisite_users[item]["automation_secret"] }}'
     crypt_scheme: md5_crypt
+  ignore_errors: '{{ ansible_check_mode }}'
   when: ("password" in checkmk_server__multisite_users[item]) or
         ("automation_secret" in checkmk_server__multisite_users[item])
   with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
