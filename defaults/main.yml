@@ -449,7 +449,7 @@ checkmk_server__distributed_sites: {}
 #
 # Default sites properties for distributed monitoring.
 checkmk_server__distributed_sites_defaults:
-  user: 'sitesync'
+  username: 'sitesync'
   password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
   disabled: False
   disable_wato: True
