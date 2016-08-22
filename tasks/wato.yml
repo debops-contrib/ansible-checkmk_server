@@ -7,19 +7,25 @@
     url: '{{ checkmk_server__distributed_sites[item].multisiteurl }}/login.py'
     method: POST
     body: '{{ [ "_login=1",
-                "_username=" + (checkmk_server__distributed_sites[item].username if "username" in checkmk_server__distributed_sites[item]
-                                                                                 else checkmk_server__distributed_sites_defaults.username),
-                "_password=" + (checkmk_server__distributed_sites[item].password if "password" in checkmk_server__distributed_sites[item]
-                                                                                 else checkmk_server__distributed_sites_defaults.password),
+                "_username=" + (checkmk_server__distributed_sites[item].username
+                                if "username" in checkmk_server__distributed_sites[item]
+                                else checkmk_server__distributed_sites_defaults.username),
+                "_password=" + (checkmk_server__distributed_sites[item].password
+                                if "password" in checkmk_server__distributed_sites[item]
+                                else checkmk_server__distributed_sites_defaults.password),
                 "_origtarget=automation_login.py",
                 "_plain_error=1" ] | join("&") }}'
     force_basic_auth: yes
-    user: '{{ checkmk_server__distributed_sites[item].username if "username" in checkmk_server__distributed_sites[item]
-                                                               else checkmk_server__distributed_sites_defaults.username }}'
-    password: '{{ checkmk_server__distributed_sites[item].password if "password" in checkmk_server__distributed_sites[item]
-                                                                   else checkmk_server__distributed_sites_defaults.password }}'
+    user: '{{ checkmk_server__distributed_sites[item].username
+              if "username" in checkmk_server__distributed_sites[item]
+              else checkmk_server__distributed_sites_defaults.username }}'
+    password: '{{ checkmk_server__distributed_sites[item].password
+                  if "password" in checkmk_server__distributed_sites[item]
+                  else checkmk_server__distributed_sites_defaults.password }}'
     status_code: 302
-    validate_certs: '{{ not checkmk_server__distributed_sites[item].insecure }}'
+    validate_certs: '{{ not checkmk_server__distributed_sites[item].insecure
+                        if "insecure" in checkmk_server__distributed_sites[item]
+                        else checkmk_server__distributed_sites_defaults.insecure }}'
   register: checkmk_server__register_multisite_login
   ignore_errors: '{{ ansible_check_mode }}'
   when: not item == checkmk_server__site
