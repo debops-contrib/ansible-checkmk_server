@@ -45,8 +45,8 @@
     basedir: '/'
   ignore_errors: '{{ ansible_check_mode }}'
   with_items: '{{ checkmk_server__patches }}'
-  when: checkmk_server_register_apt_install.changed or
-        checkmk_server_register_deb_install.changed
+  when: (checkmk_server_register_apt_install | changed) or
+        (checkmk_server_register_deb_install | changed)
 
 - name: Set TLS options
   template:
@@ -134,4 +134,4 @@
 - name: Re-read local facts if they have been changed
   action: setup
   when: checkmk_server_register_local_facts|d() and
-        checkmk_server_register_local_facts.changed
+        (checkmk_server_register_local_facts | changed)
