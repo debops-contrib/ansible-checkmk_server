@@ -60,7 +60,7 @@
   service:
     name: 'check-mk-raw-{{ (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
     state: stopped
-  when: (not item.stdout == item.item.value) or
+  when: (not (item.item.value|string) == item.stdout) or
         checkmk_server__fact_update|d(False)
   with_items: '{{ checkmk_server__register_omd_config.results
                   if not "failed" in checkmk_server__register_omd_config else [] }}'
@@ -72,7 +72,7 @@
 
 - name: Set OMD site properties
   command: omd config '{{ checkmk_server__site }}' set '{{ item.item.var }}' '{{ item.item.value }}'
-  when: not item.stdout == item.item.value
+  when: not item.stdout == (item.item.value|string)
   with_items: '{{ checkmk_server__register_omd_config.results
                   if not "failed" in checkmk_server__register_omd_config else [] }}'
 
