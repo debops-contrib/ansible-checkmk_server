@@ -31,7 +31,7 @@
     checkmk_server__fact_update: True
   always_run: True
   ignore_errors: '{{ ansible_check_mode }}'
-  when: checkmk_server__update|d(False)|bool and
+  when: checkmk_server__site_update|bool and
         ((checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] |
          version_compare(checkmk_server__version, "<"))
 
