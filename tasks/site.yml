@@ -31,7 +31,7 @@
     checkmk_server__fact_update: True
   always_run: True
   ignore_errors: '{{ ansible_check_mode }}'
-  when: checkmk_server__update|d(False)|bool and
+  when: checkmk_server__site_update|bool and
         ((checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] |
          version_compare(checkmk_server__version, "<"))
 
@@ -57,13 +57,12 @@
   ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Shutdown Check_MK site (if required)
-  service:
-    name: 'check-mk-raw-{{ (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
-    state: stopped
+  command: omd stop '{{ checkmk_server__site }}'
   when: (not (item.item.value|string) == item.stdout) or
         checkmk_server__fact_update|d(False)
   with_items: '{{ checkmk_server__register_omd_config.results
                   if not "failed" in checkmk_server__register_omd_config else [] }}'
+  register: checkmk_server__register_omd_stop
 
 - name: Run Check_MK site update
   command: omd --force update '{{ checkmk_server__site }}'
@@ -76,12 +75,15 @@
   with_items: '{{ checkmk_server__register_omd_config.results
                   if not "failed" in checkmk_server__register_omd_config else [] }}'
 
-- name: Enable and start Check_MK site
+- name: Enable Check_MK service
   service:
     name: 'check-mk-raw-{{ checkmk_server__version if checkmk_server__fact_update|d() else (checkmk_server_register_site_version.stdout.split(" ")[-1] | splitext)[0] }}'
-    state: started
     enabled: yes
   ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Start Check_MK site (if required)
+  command: omd start '{{ checkmk_server__site }}'
+  when: checkmk_server__register_omd_stop | changed
 
 - name: Create .ssh directory
   file:
