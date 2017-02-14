@@ -37,6 +37,9 @@ checkmk_server__confd_variable_map:
   checkgroup_parameters:
     filename: 'rules.mk'
     template: 'rule_w_default'
+  custom_checks:
+    filename: 'rules.mk'
+    template: 'rule'
   datasource_programs:
     filename: 'rules.mk'
     template: 'rule'
