@@ -120,7 +120,7 @@
 
 {% macro tmpl_var__key_value(_name, _value) %}
 
-{{ _name }} = {{ _value }}
+{{ _name }} = {{ "'" + _value + "'" if (_value is string) else _value }}
 {% endmacro %}
 
 
