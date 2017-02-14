@@ -513,7 +513,7 @@ checkmk_server__contact_defaults:
 checkmk_server__site_cfg_contactgroups:
   - name: 'define_contactgroups'
     value:
-      all: 'Everybody'
+      all: 'Everything'
 
 
 # .. envvar:: checkmk_server__site_cfg_rules
