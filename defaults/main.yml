@@ -486,6 +486,7 @@ checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
                                      checkmk_server__site_cfg_servicegroups +
                                      checkmk_server__site_cfg_datasource_programs +
                                      checkmk_server__site_cfg_netif_description +
+                                     checkmk_server__site_cfg_notification_defaults +
                                      checkmk_server__site_cfg_software_inventory }}'
 
 
@@ -589,6 +590,20 @@ checkmk_server__site_cfg_software_inventory:
     description: 'Enable collection of hardware/software information'
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
+
+
+# .. envvar:: checkmk_server__site_cfg_notification_defaults
+#
+# Set fallback email address for rule based notifications. Must be set
+# including domain otherwise it won't be accepted by Check_MK.
+checkmk_server__site_cfg_notification_defaults:
+  - name: 'notification_fallback_email'
+    filename: 'global.mk'
+    template: 'key_value'
+    value: '{{ ansible_local.core.admin_public_email[0]
+               if ("core" in ansible_local) and
+                  ("admin_public_email" in ansible_local.core)
+               else "root@" + ansible_domain }}'
 
 
 # .. envvar:: checkmk_server__site_cfg_netif_description
