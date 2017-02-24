@@ -9,7 +9,7 @@
 # .. envvar:: checkmk_server__version
 #
 # Check_MK software version.
-checkmk_server__version: '1.2.8p17'
+checkmk_server__version: '1.2.8p18'
 
 
 # .. envvar:: checkmk_server__version_label
