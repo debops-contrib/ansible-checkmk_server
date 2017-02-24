@@ -120,7 +120,7 @@
 
 {% macro tmpl_var__key_value(_name, _value) %}
 
-{{ _name }} = {{ _value }}
+{{ _name }} = {{ "'" + _value + "'" if (_value is string) else _value }}
 {% endmacro %}
 
 
@@ -305,11 +305,12 @@ if {{ _name }} == None:
 {%   set _rule = "'" + _value + "'" %}
 {% elif (_value is mapping) or (_value is sequence) %}
 {#
- #   Remove unicode hints for dictionary keys.
+ #   Remove unicode hints for dictionary keys and values.
  #   Substitute lists with tuples: ['foo', 'bar'] -> ('foo', 'bar')
  #   Fix nested lists: ({'foo': (bar)}) -> ('foo', ('bar'))
  #}
 {%   set _rule = _value | regex_replace("(, |{)u'", "\\1'") |
+                          regex_replace(": u'", ": '") |
                           replace("[", "(") | replace("]", ")") |
                           regex_replace("\({('[\w]+'):", "(\\1,") | replace(")})", "))") %}
 {% else %}

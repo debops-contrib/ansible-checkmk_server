@@ -123,6 +123,16 @@
         value: [ 4000, 8000 ]
         tags: [ 'physical' ]
         description: 'Physical servers need to handle a lot of threads'
+      # custom_checks
+      - name: 'custom_checks'
+        filename: 'rules.mk'
+        template: 'rule'
+        value:
+          service_description: 'Galera Cluster'
+          command_line: '$USER1$/check_by_ssh -t 60 -E -H $HOSTADDRESS$ -C "sudo /usr/lib64/nagios/plugins/check_galera_cluster -c 1"'
+        hosts:
+          - 'mysql01.example.com'
+          - 'mysql02.example.com'
 
   tasks:
     - template:

@@ -85,3 +85,8 @@ checkgroup_parameters.setdefault('threads', [])
 checkgroup_parameters['threads'] = [
   ( (4000, 8000), ['physical', ], ALL_HOSTS, {'description': u'Physical servers need to handle a lot of threads'} ),
 ] + checkgroup_parameters['threads']
+
+
+custom_checks = [
+  ( {'service_description': u'Galera Cluster', 'command_line': '$USER1$/check_by_ssh -t 60 -E -H $HOSTADDRESS$ -C "sudo /usr/lib64/nagios/plugins/check_galera_cluster -c 1"'}, [], ['mysql01.example.com', 'mysql02.example.com'] ),
+]
