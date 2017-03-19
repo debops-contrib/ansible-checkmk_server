@@ -139,3 +139,33 @@
   ignore_errors: '{{ ansible_check_mode }}'
   register: checkmk_server__register_ssh_public_key
   when: checkmk_server__sshkeys|d()
+
+- name: Query installed Check_MK packages
+  command: mkp list
+  become_user: '{{ checkmk_server__user }}'
+  become_flags: '-i'
+  changed_when: False
+  always_run: True
+  register: checkmk_server__register_mkp
+  tags:
+    - 'role::checkmk_server:mkp'
+
+- name: Download Check_MK packages
+  get_url:
+    url: '{{ item.url }}'
+    dest: '{{ checkmk_server__site_home }}/tmp'
+  when: ('url' in item) and
+        (item.name not in checkmk_server__register_mkp.stdout_lines)
+  register: checkmk_server__register_mkp_download
+  with_items: '{{ checkmk_server__site_packages }}'
+  tags:
+    - 'role::checkmk_server:mkp'
+
+- name: Install Check_MK packages
+  command: mkp install '{{ item.dest|d() }}'
+  become_user: '{{ checkmk_server__user }}'
+  become_flags: '-i'
+  when: not item.skipped
+  with_items: '{{ checkmk_server__register_mkp_download.results }}'
+  tags:
+    - 'role::checkmk_server:mkp'

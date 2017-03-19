@@ -52,3 +52,6 @@ Available role tags:
 
 ``role::checkmk_server:multisite``
   Execute tasks which configure the Check_MK multisite Web interface.
+
+``role::checkmk_server:mkp``
+  Execute tasks to install Check_MK packages.

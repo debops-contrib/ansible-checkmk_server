@@ -56,6 +56,27 @@ following keys:
   key set with ``privatekey_file``.
 
 
+.. _checkmk_server__site_packages:
+
+checkmk_server__site_packages
+-----------------------------
+
+Check_MK has a plugin system where site customizations such as additional
+checks can be installed. This is done via ``.mkp`` packages. For more
+information see the upstream documentation about `Check_MK extension packages`_.
+
+.. _Check_MK extension packages: https://mathias-kettner.com/cms_mkps.html
+
+Packages which should be installed for the current Check_MK site are defined
+as a list of YAML dictionaries with the following configuration keys:
+
+``name``
+  Name of the package, required.
+
+``url``
+  Download URL of the ``.mkp`` package archive, required.
+
+
 .. _checkmk_server__multisite_users:
 
 checkmk_server__multisite_users
