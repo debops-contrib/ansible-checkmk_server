@@ -68,13 +68,18 @@ information see the upstream documentation about `Check_MK extension packages`_.
 .. _Check_MK extension packages: https://mathias-kettner.com/cms_mkps.html
 
 Packages which should be installed for the current Check_MK site are defined
-as a list of YAML dictionaries with the following configuration keys:
+as a list of YAML dictionaries with the following configuration keys. One of
+``path`` or ``url`` must be given:
 
 ``name``
   Name of the package, required.
 
+``path``
+  Optional. Local file system path of the ``.mkp`` package archive on the
+  Ansible controller.
+
 ``url``
-  Download URL of the ``.mkp`` package archive, required.
+  Optional. Download URL of the ``.mkp`` package archive.
 
 
 .. _checkmk_server__multisite_users:
