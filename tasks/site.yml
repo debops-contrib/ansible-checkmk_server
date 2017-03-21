@@ -165,7 +165,7 @@
   command: mkp install '{{ item.dest|d() }}'
   become_user: '{{ checkmk_server__user }}'
   become_flags: '-i'
-  when: not item.skipped
+  when: not (item | skipped)
   with_items: '{{ checkmk_server__register_mkp_download.results }}'
   tags:
     - 'role::checkmk_server:mkp'
