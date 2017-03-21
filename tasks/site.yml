@@ -154,6 +154,7 @@
   get_url:
     url: '{{ item.url }}'
     dest: '{{ checkmk_server__site_home }}/tmp'
+    checksum: '{{ item.checksum|d(omit) }}'
   when: ('url' in item) and
         (item.name not in checkmk_server__register_mkp.stdout_lines)
   register: checkmk_server__register_mkp_download
