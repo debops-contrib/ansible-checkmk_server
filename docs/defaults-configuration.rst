@@ -56,6 +56,40 @@ following keys:
   key set with ``privatekey_file``.
 
 
+.. _checkmk_server__site_packages:
+
+checkmk_server__site_packages
+-----------------------------
+
+Check_MK has a plugin system where site customizations such as additional
+checks can be installed. This is done via ``.mkp`` packages. For more
+information see the upstream documentation about `Check_MK extension packages`_.
+
+.. _Check_MK extension packages: https://mathias-kettner.com/cms_mkps.html
+
+Packages which should be installed for the current Check_MK site are defined
+as a list of YAML dictionaries with the following configuration keys. One of
+``path`` or ``url`` must be given:
+
+``name``
+  Name of the package, required.
+
+``path``
+  Optional. Local file system path of the ``.mkp`` package archive on the
+  Ansible controller. Cannot be combined with the ``url`` parameter.
+
+``url``
+  Optional. Download URL of the ``.mkp`` package archive. Cannot be combined
+  with the ``path`` parameter.
+
+``checksum``
+  Optional. Checksum of the download archive given in the ``url`` parameter.
+  Cannot be combined with the ``path`` parameter. For the accepted parameter
+  format check the Ansible `get_url module`_ documentation.
+
+.. _get_url module: https://docs.ansible.com/ansible/get_url_module.html#options
+
+
 .. _checkmk_server__multisite_users:
 
 checkmk_server__multisite_users

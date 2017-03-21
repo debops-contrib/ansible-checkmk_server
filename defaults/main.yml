@@ -618,6 +618,13 @@ checkmk_server__site_cfg_netif_description:
     wato: False
 
 
+# .. envvar:: checkmk_server__site_packages
+#
+# Additional Check_MK packages (MKP) to be installed. See
+# :ref:`checkmk_server__site_packages` for more information.
+checkmk_server__site_packages: []
+
+
 # -----------------
 # PKI Configuration
 # -----------------
