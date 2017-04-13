@@ -142,7 +142,11 @@ checkmk_server__site: 'debops'
 # .. envvar:: checkmk_server__hostname [[[
 #
 # Set Check_MK server DNS hostname (e. g. for agent download, API calls, ...).
-checkmk_server__hostname: '{{ ansible_fqdn }}'
+# FIXME: Rename to checkmk_server__fqdn.
+checkmk_server__hostname: '{{ ansible_local.core.fqdn
+                              if (ansible_local|d() and ansible_local.core|d() and
+                                  ansible_local.core.fqdn|d())
+                              else ansible_fqdn }}'
 
                                                                    # ]]]
 # .. envvar:: checkmk_server__site_url [[[
