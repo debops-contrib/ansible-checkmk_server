@@ -1,5 +1,5 @@
-Ansible role: debops.checkmk_server
-===================================
+Ansible role: debops-contrib.checkmk_server
+===========================================
 
 .. toctree::
    :maxdepth: 2

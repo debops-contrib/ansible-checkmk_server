@@ -3,7 +3,7 @@ Default variable details
 
 .. include:: includes/all.rst
 
-Some of the debops.checkmk_server_ default variables have more extensive
+Some of the debops-contrib.checkmk_server_ default variables have more extensive
 configuration than simple strings or lists, here you can find documentation
 and examples for them.
 
@@ -37,7 +37,7 @@ This configuration variable indicates if SSH keys should be configured for
 accessing the Check_MK agent. If set to a non-empty value a additional
 Check_MK host tag "Check_MK Agent via SSH" is configured and the SSH public
 key is set as Ansible fact, so that it can be used by the
-debops.checkmk_agent_ role to configure SSH-based agent access. The
+debops-contrib.checkmk_agent_ role to configure SSH-based agent access. The
 :envvar:`checkmk_server__sshkeys` variable is a dictionary which support the
 following keys:
 
