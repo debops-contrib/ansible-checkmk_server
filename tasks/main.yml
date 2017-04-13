@@ -1,4 +1,5 @@
 ---
+# vim: foldmarker=[[[,]]]:foldmethod=marker
 
 - name: Install prerequisite packages
   apt:
@@ -133,7 +134,7 @@
   register: checkmk_server_register_local_facts
   when: checkmk_server__sshkeys|d()
 
-- name: Re-read local facts if they have been changed
+- name: Gather facts if they were modified
   action: setup
   when: checkmk_server_register_local_facts|d() and
         (checkmk_server_register_local_facts | changed)

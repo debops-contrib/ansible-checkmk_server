@@ -1,7 +1,7 @@
 ---
-#
-# Read existing Check_MK configuration
-#
+# vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# Read existing Check_MK configuration [[[1
 - name: Wait for the site to be started
   wait_for:
     path: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'
@@ -35,9 +35,7 @@
   tags: [ 'role::checkmk_server:multisite' ]
 
 
-#
-# Check_MK multisite authentication
-#
+# Check_MK Multisite authentication [[[1
 - name: Set local httpd user passwords
   htpasswd:
     path: '{{ checkmk_server__site_home }}/etc/htpasswd'
@@ -52,7 +50,7 @@
   with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
-- name: Create Web directory for multisite users
+- name: Create Web directory for Multisite users
   file:
     path: '{{ checkmk_server__site_home }}/var/check_mk/web/{{ item }}'
     state: directory
@@ -71,7 +69,7 @@
   when: ("automation_secret" in checkmk_server__multisite_users[item])
   with_items: '{{ checkmk_server__multisite_users|d({})|list }}'
 
-- name: Generate Check_MK multisite user definitions
+- name: Generate Check_MK Multisite user definitions
   template:
     src: 'etc/check_mk/multisite.d/wato/users.mk.j2'
     dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/users.mk'

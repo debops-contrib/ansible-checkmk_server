@@ -1,7 +1,7 @@
 ---
-#
-# Check_MK multisite/WATO configuration
-#
+# vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# Check_MK Multisite/WATO configuration [[[
 - name: Login on slave sites
   uri:
     url: '{{ checkmk_server__distributed_sites[item].multisiteurl }}/login.py'
@@ -15,7 +15,7 @@
                                 else checkmk_server__distributed_sites_defaults.password),
                 "_origtarget=automation_login.py",
                 "_plain_error=1" ] | join("&") }}'
-    force_basic_auth: yes
+    force_basic_auth: True
     user: '{{ checkmk_server__distributed_sites[item].username
               if "username" in checkmk_server__distributed_sites[item]
               else checkmk_server__distributed_sites_defaults.username }}'
@@ -28,7 +28,7 @@
                         else checkmk_server__distributed_sites_defaults.insecure }}'
   register: checkmk_server__register_multisite_login
   ignore_errors: '{{ ansible_check_mode }}'
-  when: not item == checkmk_server__site
+  when: item != checkmk_server__site
   with_items: '{{ checkmk_server__distributed_sites|d([]) }}'
 
 - name: Get Multisite distribution secrets
@@ -51,20 +51,20 @@
     group: '{{ checkmk_server__group }}'
   tags: [ 'role::checkmk_server:multisite' ]
 
-- name: Generate Check_MK WATO multisite definitions
+- name: Generate Check_MK WATO Multisite definitions
   template:
     src: '{{ lookup("template_src", "etc/check_mk/multisite.d/wato/" + item | basename) }}'
     dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/wato/{{ item | basename | replace(".j2", "") }}'
     owner: '{{ checkmk_server__user }}'
     group: '{{ checkmk_server__group }}'
     mode: '{{ "0660"
-              if item | basename | replace(".j2", "") in [ "hosttags.mk", "users.mk", "user_connections.mk" ]
+              if (item|basename | replace(".j2", "")) in [ "hosttags.mk", "users.mk", "user_connections.mk" ]
               else "0644" }}'
   with_fileglob: [ '../templates/etc/check_mk/multisite.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]
   tags: [ 'role::checkmk_server:rules', 'role::checkmk_server:multisite' ]
 
-- name: Generate Check_MK custom multisite definitions
+- name: Generate Check_MK custom Multisite definitions
   template:
     src: 'etc/check_mk/multisite.d/custom.mk.j2'
     dest: '{{ checkmk_server__site_home }}/{{ checkmk_server__multisite_config_path }}/{{ item["filename"] }}'
@@ -83,7 +83,7 @@
     owner: '{{ checkmk_server__user }}'
     group: '{{ checkmk_server__group }}'
     mode: '{{ "0660"
-              if item | basename | replace(".j2", "") in [ "contacts.mk" ]
+              if (item|basename | replace(".j2", "")) in [ "contacts.mk" ]
               else "0644" }}'
   with_fileglob: [ '../templates/etc/check_mk/conf.d/wato/*.mk.j2' ]
   notify: [ 'Reload Check_MK configuration' ]
