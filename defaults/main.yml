@@ -222,7 +222,7 @@ checkmk_server__ssh_user: 'checkmk'
 # Command which is executed when querying the Check_MK agent via SSH. Set this
 # to :command:`/usr/bin/check_mk_caching_agent` when agents are queried by
 # multiple servers.
-checkmk_server__ssh_command: '{{ "/usr/bin/sudo " if not checkmk_server__ssh_user == "root" else omit }}/usr/bin/check_mk_agent'
+checkmk_server__ssh_command: '{{ "/usr/bin/sudo " if (checkmk_server__ssh_user != "root") else "" }}/usr/bin/check_mk_agent'
 
                                                                    # ]]]
 # .. envvar:: checkmk_server__ssh_arguments [[[
