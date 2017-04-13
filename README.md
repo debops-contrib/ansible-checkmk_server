@@ -20,7 +20,7 @@ This role installs and manages [Check_MK](http://mathias-kettner.com/check_mk.ht
 
 ### Installation
 
-This role requires at least Ansible `v2.1.1`. To install it, run:
+This role requires at least Ansible `v2.1.5`. To install it, run:
 
 ```Shell
 ansible-galaxy install debops-contrib.checkmk_server

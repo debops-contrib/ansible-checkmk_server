@@ -12,7 +12,7 @@ a powerful configuration language for creating check inventories.
 Installation
 ~~~~~~~~~~~~
 
-This role requires at least Ansible ``v2.1.1``. To install it, run:
+This role requires at least Ansible ``v2.1.5``. To install it, run:
 
 .. code-block:: console
 
