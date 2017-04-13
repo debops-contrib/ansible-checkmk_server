@@ -1,31 +1,40 @@
 ---
-# Default variables
+# .. vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# debops-contrib.checkmk_server default variables [[[
+# ===================================================
+
+# .. contents:: Sections
+#    :local:
+#
+# .. include:: includes/all.rst
+
+
 # =================
 
-# ---------------------
-# General Configuration
-# ---------------------
+# General Configuration [[[
+# -------------------------
 
-# .. envvar:: checkmk_server__version
+# .. envvar:: checkmk_server__version [[[
 #
 # Check_MK software version.
 checkmk_server__version: '1.2.8p20'
 
-
-# .. envvar:: checkmk_server__version_label
+                                                                   # ]]]
+# .. envvar:: checkmk_server__version_label [[[
 #
 # Check_MK version label used with the :command:`omd` tool.
 checkmk_server__version_label: '{{ checkmk_server__version }}.cre'
 
-
-# .. envvar:: checkmk_server__site_update
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_update [[[
 #
 # Update Check_MK site if current version is lower than
 # :envvar:`checkmk_server__version`
 checkmk_server__site_update: False
 
-
-# .. envvar:: checkmk_server__patches
+                                                                   # ]]]
+# .. envvar:: checkmk_server__patches [[[
 #
 # Custom patches to apply after installing Check_MK package
 checkmk_server__patches:
@@ -34,17 +43,18 @@ checkmk_server__patches:
   - patch: 'check-mk-raw-1.2.8p4-read-X-Forwarded-Port-header.patch'
     file: '/omd/versions/{{ checkmk_server__version_label }}/skel/etc/apache/conf.d/omd.conf'
 
-
-# .. envvar:: checkmk_server__ferm_dependent_rules
+                                                                   # ]]]
+# .. envvar:: checkmk_server__ferm_dependent_rules [[[
 #
-# Firewall configuration using the ``debops.ferm`` Ansible role.
+# Firewall configuration using the debops.ferm_ Ansible role.
 checkmk_server__ferm_dependent_rules: '{{
   checkmk_server__ferm_web_rules +
   (checkmk_server__ferm_livestatus_rules if checkmk_server__multisite_livestatus else [])
+
+                                                                   # ]]]
 }}'
 
-
-# .. envvar:: checkmk_server__ferm_web_rules
+# .. envvar:: checkmk_server__ferm_web_rules [[[
 #
 # Firewall configuration for WATO Web access.
 checkmk_server__ferm_web_rules:
@@ -55,8 +65,8 @@ checkmk_server__ferm_web_rules:
     weight: '40'
     role: 'checkmk_server'
 
-
-# .. envvar:: checkmk_server__ferm_livestatus_rules
+                                                                   # ]]]
+# .. envvar:: checkmk_server__ferm_livestatus_rules [[[
 #
 # Firewall configuration for Multisite Livestatus access.
 checkmk_server__ferm_livestatus_rules:
@@ -67,22 +77,22 @@ checkmk_server__ferm_livestatus_rules:
     weight: '40'
     role: 'checkmk_server'
 
-
-# .. envvar:: checkmk_server__web_allow
+                                                                   # ]]]
+# .. envvar:: checkmk_server__web_allow [[[
 #
 # List of IP addresses or network CIDR ranges allowed to connect to the
 # Check_MK Web interface. If list is empty, anyone can connect.
 checkmk_server__web_allow: []
 
-
-# .. envvar:: checkmk_server__livestatus_allow
+                                                                   # ]]]
+# .. envvar:: checkmk_server__livestatus_allow [[[
 #
 # List of IP addresses or network CIDR ranges allowed to connect to the
 # Check_MK Livestatus TCP socket. If list is empty, anyone can connect.
 checkmk_server__livestatus_allow: []
 
-
-# .. envvar:: checkmk_server__etc_services__dependent_list
+                                                                   # ]]]
+# .. envvar:: checkmk_server__etc_services__dependent_list [[[
 #
 # Add entry for Livestatus to :file:`/etc/services` using the
 # `debops.etc_services` role.
@@ -91,55 +101,53 @@ checkmk_server__etc_services__dependent_list:
     port: '{{ checkmk_server__livestatus_port }}'
     comment: 'Check_MK server Livestatus'
 
-
-# .. envvar:: checkmk_server__livestatus_port
+                                                                   # ]]]
+# .. envvar:: checkmk_server__livestatus_port [[[
 #
 # TCP port for Multisite Livestatus socket.
 checkmk_server__livestatus_port: 6557
 
-
-# .. envvar:: checkmk_server__software_inventory
+                                                                   # ]]]
+# .. envvar:: checkmk_server__software_inventory [[[
 #
 # Enable collection of installed software. Requires the ``mk_inventory``
 # plugin to be installed on the Check_MK agents.
 checkmk_server__software_inventory: True
+                                                                   # ]]]
+                                                                   # ]]]
+# APT packages [[[
+# ----------------
 
-
-# ------------
-# APT packages
-# ------------
-
-# .. envvar:: checkmk_server__raw_package
+# .. envvar:: checkmk_server__raw_package [[[
 #
 # Check_MK RAW package download URL. Alternatively this can also be a local
 # deb file or a package name in an already available apt repository.
 checkmk_server__raw_package: 'https://mathias-kettner.de/support/{{ checkmk_server__version }}/check-mk-raw-{{ checkmk_server__version }}_0.{{ ansible_distribution_release }}_amd64.deb'
 
-
-# .. envvar:: checkmk_server__prerequisite_packages
+                                                                   # ]]]
+# .. envvar:: checkmk_server__prerequisite_packages [[[
 #
 # List of prerequisite packages which must be available before installing
 # the Check_MK RAW package
 checkmk_server__prerequisite_packages: [ 'apache2', 'python-passlib' ]
+                                                                   # ]]]
+                                                                   # ]]]
+# Check_MK Site Configuration [[[
+# -------------------------------
 
-
-# ---------------------------
-# Check_MK Site Configuration
-# ---------------------------
-
-# .. envvar:: checkmk_server__site
+# .. envvar:: checkmk_server__site [[[
 #
 # Check_MK site name. Set to `False` to disable site configuration.
 checkmk_server__site: 'debops'
 
-
-# .. envvar:: checkmk_server__hostname
+                                                                   # ]]]
+# .. envvar:: checkmk_server__hostname [[[
 #
-# Set Check_MK server DNS hostname (e.g. for agent download, API calls, ...).
+# Set Check_MK server DNS hostname (e. g. for agent download, API calls, ...).
 checkmk_server__hostname: '{{ ansible_fqdn }}'
 
-
-# .. envvar:: checkmk_server__site_url
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_url [[[
 #
 # Check_MK server site URL.
 checkmk_server__site_url: '{{ ("https://" if checkmk_server__pki else "http://") +
@@ -147,15 +155,15 @@ checkmk_server__site_url: '{{ ("https://" if checkmk_server__pki else "http://")
                                checkmk_server__site
                               if checkmk_server__site|d() else "" }}'
 
-
-# .. envvar:: checkmk_server__webapi_url
+                                                                   # ]]]
+# .. envvar:: checkmk_server__webapi_url [[[
 #
 # WebAPI URL of monitoring site.
 checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
                                 if checkmk_server__site|d() else "" }}'
 
-
-# .. envvar:: checkmk_server__omd_config
+                                                                   # ]]]
+# .. envvar:: checkmk_server__omd_config [[[
 #
 # Check_MK site configuration set via :command:`omd config`. Changing these
 # values will shutdown Check_MK during reconfiguration. Check
@@ -164,26 +172,27 @@ checkmk_server__omd_config: '{{
   checkmk_server__omd_config_email +
   checkmk_server__omd_config_core +
   (checkmk_server__omd_config_livestatus if checkmk_server__multisite_livestatus|d() else [])
+
+                                                                   # ]]]
 }}'
 
-
-# .. envvar:: checkmk_server__omd_config_email
+# .. envvar:: checkmk_server__omd_config_email [[[
 #
 # Administrator email address set via OMD
 checkmk_server__omd_config_email:
   - var: 'ADMIN_MAIL'
     value: 'hostmaster@{{ ansible_domain if ansible_domain else ansible_hostname }}'
 
-
-# .. envvar:: checkmk_server__omd_config_core
+                                                                   # ]]]
+# .. envvar:: checkmk_server__omd_config_core [[[
 #
 # Monitoring core set via OMD. Possible values: `icinga` or `nagios`.
 checkmk_server__omd_config_core:
   - var: 'CORE'
     value: 'icinga'
 
-
-# .. envvar:: checkmk_server__omd_config_livestatus
+                                                                   # ]]]
+# .. envvar:: checkmk_server__omd_config_livestatus [[[
 #
 # Livestatus service configuration via OMD.
 checkmk_server__omd_config_livestatus:
@@ -192,8 +201,8 @@ checkmk_server__omd_config_livestatus:
   - var: 'LIVESTATUS_TCP_PORT'
     value: '{{ checkmk_server__livestatus_port }}'
 
-
-# .. envvar:: checkmk_server__sshkeys
+                                                                   # ]]]
+# .. envvar:: checkmk_server__sshkeys [[[
 #
 # Indicate if a SSH keypair should be provided to allow agent
 # connections via SSH. For more information check
@@ -201,54 +210,53 @@ checkmk_server__omd_config_livestatus:
 checkmk_server__sshkeys:
   generate_keypair: True
 
-
-# .. envvar:: checkmk_server__ssh_user
+                                                                   # ]]]
+# .. envvar:: checkmk_server__ssh_user [[[
 #
 # User account which is used to query Check_MK agent via SSH.
 checkmk_server__ssh_user: 'checkmk'
 
-
-# .. envvar:: checkmk_server__ssh_command
+                                                                   # ]]]
+# .. envvar:: checkmk_server__ssh_command [[[
 #
 # Command which is executed when querying the Check_MK agent via SSH. Set this
 # to :command:`/usr/bin/check_mk_caching_agent` when agents are queried by
 # multiple servers.
 checkmk_server__ssh_command: '{{ "/usr/bin/sudo " if not checkmk_server__ssh_user == "root" else omit }}/usr/bin/check_mk_agent'
 
-
-# .. envvar:: checkmk_server__ssh_options
+                                                                   # ]]]
+# .. envvar:: checkmk_server__ssh_arguments [[[
 #
 # SSH arguments used when querying the Check_MK agent. For possible options
 # check :command:`man 5 ssh_config`.
 checkmk_server__ssh_arguments: '-o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10s'
+                                                                   # ]]]
+                                                                   # ]]]
+# Multisite Web Configuration [[[
+# -------------------------------
 
-
-# ---------------------------
-# Multisite Web Configuration
-# ---------------------------
-
-# .. envvar:: checkmk_server__multisite_slave
+# .. envvar:: checkmk_server__multisite_slave [[[
 #
 # Indicate if this site is a distributed monitoring slave which receives the
 # Check_MK configuration from another Check_MK server instance.
 checkmk_server__multisite_slave: False
 
-
-# .. envvar:: checkmk_server__multisite_livestatus
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_livestatus [[[
 #
 # Enable multisite Livestatus service. This is required for distributed
 # monitoring of this site.
 checkmk_server__multisite_livestatus: '{{ True if checkmk_server__multisite_slave|d() else False }}'
 
-
-# .. envvar:: checkmk_server__multisite_config_path
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_config_path [[[
 #
 # Configuration path for Check_MK multisite configurations. Relative to the
 # site's chroot directory.
 checkmk_server__multisite_config_path: 'etc/check_mk/multisite.d'
 
-
-# .. envvar:: checkmk_server__multisite_config_map
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_config_map [[[
 #
 # List of dictionaries which will generate the Check_MK multisite
 # configuration in :envvar:`checkmk_server__multisite_config_path`.
@@ -256,16 +264,16 @@ checkmk_server__multisite_config_map: '{{ checkmk_server__multisite_cfg_wato_hos
                                           checkmk_server__multisite_cfg_wato_aux_tags +
                                           checkmk_server__multisite_cfg_roles }}'
 
-
-# .. envvar:: checkmk_server__multisite_cfg_default_hosttags
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_cfg_wato_host_tags [[[
 #
 # Multisite ``wato_host_tags`` variable definition.
 checkmk_server__multisite_cfg_wato_host_tags:
   - name: 'wato_host_tags'
     value: '{{ checkmk_server__multisite_default_wato_host_tags }}'
 
-
-# .. envvar:: checkmk_server__multisite_default_wato_host_tags
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_default_wato_host_tags [[[
 #
 # Default upstream host tag configuration with additional ``cmk-agent-ssh`` tag
 # to indicate SSH-based Check_MK agents.
@@ -303,24 +311,24 @@ checkmk_server__multisite_default_wato_host_tags:
          - dmz:
              'DMZ (low latency, secure access)': []
 
-
-# .. envvar:: checkmk_server__multisite_cfg_wato_aux_tags
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_cfg_wato_aux_tags [[[
 #
 # Multisite ``wato_aux_tags`` variable definition.
 checkmk_server__multisite_cfg_wato_aux_tags:
   - name: 'wato_aux_tags'
     value: '{{ checkmk_server__multisite_default_wato_aux_tags }}'
 
-
-# .. envvar:: checkmk_server__multisite_default_wato_aux_tags
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_default_wato_aux_tags [[[
 #
 # Default upstream auxiliary tags configuration.
 checkmk_server__multisite_default_wato_aux_tags:
   - snmp: 'monitor via SNMP'
   - tcp: 'monitor via Check_MK Agent'
 
-
-# .. envvar:: checkmk_server__multisite_cfg_roles
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_cfg_roles [[[
 #
 # Multisite user ``roles`` configuration.
 checkmk_server__multisite_cfg_roles:
@@ -329,8 +337,8 @@ checkmk_server__multisite_cfg_roles:
                combine(checkmk_server__multisite_debops_roles, recursive=True) |
                combine(checkmk_server__multisite_custom_roles, recursive=True) }}'
 
-
-# .. envvar:: checkmk_server__multisite_default_roles
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_default_roles [[[
 #
 # Default upstream multisite user role definitions.
 checkmk_server__multisite_default_roles:
@@ -347,8 +355,8 @@ checkmk_server__multisite_default_roles:
     builtin: True
     permissions: {}
 
-
-# .. envvar:: checkmk_server__multisite_debops_roles
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_debops_roles [[[
 #
 # Multisite user role definitions used by the Ansible role.
 checkmk_server__multisite_debops_roles:
@@ -363,22 +371,22 @@ checkmk_server__multisite_debops_roles:
       wato.seeall: True
       wato.use: True
 
-
-# .. envvar:: checkmk_server__multisite_custom_roles
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_custom_roles [[[
 #
 # Custom multisite user role definitions.
 checkmk_server__multisite_custom_roles: {}
 
-
-# .. envvar:: checkmk_server__multisite_users
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_users [[[
 #
 # Locally defined multisite users to be configured. See
 # :ref:`checkmk_server__multisite_users` for more information.
 checkmk_server__multisite_users: '{{ checkmk_server__multisite_debops_users |
                                      combine(checkmk_server__multisite_custom_users, recursive=True) }}'
 
-
-# .. envvar:: checkmk_server__multisite_default_users:
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_debops_users [[[
 #
 # Multisite user definitions used by the Ansible role.
 checkmk_server__multisite_debops_users:
@@ -391,14 +399,14 @@ checkmk_server__multisite_debops_users:
     password: '{{ lookup("password", secret + "/credentials/" + ansible_fqdn + "/checkmk_server/" + checkmk_server__site + "/sitesync/password") }}'
     roles: [ 'admin' ]
 
-
-# .. envvar:: checkmk_server__multisite_custom_users:
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_custom_users [[[
 #
 # Custom multisite user definitions.
 checkmk_server__multisite_custom_users: {}
 
-
-# .. envvar:: checkmk_server__multisite_user_defaults
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_user_defaults [[[
 #
 # Default user properties for local users defined in
 # :envvar:`checkmk_server__multisite_users`
@@ -409,15 +417,15 @@ checkmk_server__multisite_user_defaults:
   roles: [ 'user' ]
   start_url: 'dashboard.py'
 
-
-# .. envvar:: checkmk_server__multisite_user_connections
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_user_connections [[[
 #
 # LDAP user synchronization connection settings. See
 # :ref:`checkmk_server__multisite_user_connections` for more information.
 checkmk_server__multisite_user_connections: []
 
-
-# .. envvar:: checkmk_server__multisite_user_connection_defaults
+                                                                   # ]]]
+# .. envvar:: checkmk_server__multisite_user_connection_defaults [[[
 #
 # Default properties for LDAP user connections defined in
 # :envvar:`checkmk_server__multisite_user_connections`
@@ -437,15 +445,15 @@ checkmk_server__multisite_user_connection_defaults:
   user_id_umlauts: 'keep'
   user_scope: 'sub'
 
-
-# .. envvar:: checkmk_server__distributed_sites
+                                                                   # ]]]
+# .. envvar:: checkmk_server__distributed_sites [[[
 #
 # Distributed monitoring sites configuration. For more details see
 # :ref:`checkmk_server__ref_distributed_sites`
 checkmk_server__distributed_sites: {}
 
-
-# .. envvar:: checkmk_server__distributed_sites_defaults
+                                                                   # ]]]
+# .. envvar:: checkmk_server__distributed_sites_defaults [[[
 #
 # Default sites properties for distributed monitoring.
 checkmk_server__distributed_sites_defaults:
@@ -463,20 +471,19 @@ checkmk_server__distributed_sites_defaults:
   timeout: 10
   url_prefix: ''
   user_login: True
+                                                                   # ]]]
+                                                                   # ]]]
+# Monitoring Rules [[[
+# --------------------
 
-
-# ----------------
-# Monitoring Rules
-# ----------------
-
-# .. envvar:: checkmk_server__site_config_path
+# .. envvar:: checkmk_server__site_config_path [[[
 #
 # Configuration path for Check_MK main configurations. Relative to the site's
 # chroot directory.
 checkmk_server__site_config_path: 'etc/check_mk/conf.d'
 
-
-# .. envvar:: checkmk_server__site_config_map
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_config_map [[[
 #
 # List of configuration dictionaries which will generate the Check_MK
 # monitoring definitions.
@@ -489,8 +496,8 @@ checkmk_server__site_config_map: '{{ checkmk_server__site_cfg_contactgroups +
                                      checkmk_server__site_cfg_notification_defaults +
                                      checkmk_server__site_cfg_software_inventory }}'
 
-
-# .. envvar:: checkmk_server__contact_defaults
+                                                                   # ]]]
+# .. envvar:: checkmk_server__contact_defaults [[[
 #
 # Default contact properties. For a list of valid contact properties
 # see `checkmk_server__contact_properties` defined in :file:`vars/main.yml`.
@@ -506,8 +513,8 @@ checkmk_server__contact_defaults:
   pager: ''
   service_notification_options: 'wucrfs'
 
-
-# .. envvar:: checkmk_server__site_cfg_contactgroups
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_contactgroups [[[
 #
 # Define default contact group for all contacts.
 checkmk_server__site_cfg_contactgroups:
@@ -515,14 +522,14 @@ checkmk_server__site_cfg_contactgroups:
     value:
       all: 'Everything'
 
-
-# .. envvar:: checkmk_server__site_cfg_rules
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_rules [[[
 #
 # Define Check_MK monitoring rules.
 checkmk_server__site_cfg_rules: '{{ checkmk_server__site_upstream_rules }}'
 
-
-# .. envvar:: checkmk_server__site_upstream_rules
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_upstream_rules [[[
 #
 # Default upstream rule definitions.
 checkmk_server__site_upstream_rules:
@@ -549,24 +556,24 @@ checkmk_server__site_upstream_rules:
     tags: [ 'wan' ]
     description: 'Allow longer round trip times when pinging WAN hosts'
 
-
-# .. envvar:: checkmk_server__site_cfg_hostgroups
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_hostgroups [[[
 #
 # Define host groups.
 checkmk_server__site_cfg_hostgroups:
   - name: 'define_hostgroups'
     value: {}
 
-
-# .. envvar:: checkmk_server__site_cfg_servicegroups
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_servicegroups [[[
 #
 # Define service groups.
 checkmk_server__site_cfg_servicegroups:
   - name: 'define_servicegroups'
     value: {}
 
-
-# .. envvar:: checkmk_server__site_cfg_datasource_programs
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_datasource_programs [[[
 #
 # Define additional ``datasource_programs`` for agent access via SSH.
 checkmk_server__site_cfg_datasource_programs:
@@ -575,8 +582,8 @@ checkmk_server__site_cfg_datasource_programs:
     tags: [ 'cmk-agent-ssh' ]
     description: 'Check_MK Agent via SSH'
 
-
-# .. envvar:: checkmk_server__site_cfg_software_inventory:
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_software_inventory [[[
 #
 # Check_MK rules for enabling software inventory check. This check can be
 # enabled/disabled by setting :envvar:`checkmk_server__software_inventory`.
@@ -591,8 +598,8 @@ checkmk_server__site_cfg_software_inventory:
     rule_state: '{{ "present" if checkmk_server__software_inventory|d() | bool
                     else "absent" }}'
 
-
-# .. envvar:: checkmk_server__site_cfg_notification_defaults
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_notification_defaults [[[
 #
 # Set fallback email address for rule based notifications. Must be set
 # including domain otherwise it won't be accepted by Check_MK.
@@ -605,8 +612,8 @@ checkmk_server__site_cfg_notification_defaults:
                   ("admin_public_email" in ansible_local.core)
                else "root@" + ansible_domain }}'
 
-
-# .. envvar:: checkmk_server__site_cfg_netif_description
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_cfg_netif_description [[[
 #
 # Set interface name instead of index for network interface check via
 # ``if_inventory_uses_description``.
@@ -617,29 +624,28 @@ checkmk_server__site_cfg_netif_description:
     value: 'True'
     wato: False
 
-
-# .. envvar:: checkmk_server__site_packages
+                                                                   # ]]]
+# .. envvar:: checkmk_server__site_packages [[[
 #
 # Additional Check_MK packages (MKP) to be installed. See
 # :ref:`checkmk_server__site_packages` for more information.
 checkmk_server__site_packages: []
+                                                                   # ]]]
+                                                                   # ]]]
+# PKI Configuration [[[
+# ---------------------
 
-
-# -----------------
-# PKI Configuration
-# -----------------
-
-# .. envvar:: checkmk_server__pki
+# .. envvar:: checkmk_server__pki [[[
 #
 # Enable or disable support for HTTPS in Check_MK server (using
-# ``debops.pki``).
+# debops.pki_).
 checkmk_server__pki: '{{ (True
                           if (ansible_local|d() and ansible_local.pki|d() and
                               ansible_local.pki.enabled|d() | bool)
                           else False) | bool }}'
 
-
-# .. envvar:: checkmk_server__pki_path
+                                                                   # ]]]
+# .. envvar:: checkmk_server__pki_path [[[
 #
 # Base path for PKI directory.
 checkmk_server__pki_path: '{{ ansible_local.pki.path
@@ -647,8 +653,8 @@ checkmk_server__pki_path: '{{ ansible_local.pki.path
                                   ansible_local.pki.path|d())
                               else "/etc/pki/realms" }}'
 
-
-# .. envvar:: checkmk_server__pki_realm
+                                                                   # ]]]
+# .. envvar:: checkmk_server__pki_realm [[[
 #
 # Default PKI realm used by Check_MK server.
 checkmk_server__pki_realm: '{{ ansible_local.pki.realm
@@ -656,26 +662,26 @@ checkmk_server__pki_realm: '{{ ansible_local.pki.realm
                                    ansible_local.pki.realm|d())
                                else "domain" }}'
 
-
-# .. envvar:: checkmk_server__pki_ca
+                                                                   # ]]]
+# .. envvar:: checkmk_server__pki_ca [[[
 #
-# Root CA certificate, relative to ``checkmk_server__pki_realm``.
+# Root CA certificate, relative to :envvar:`checkmk_server__pki_realm`.
 checkmk_server__pki_ca: 'CA.crt'
 
-
-# .. envvar:: checkmk_server__pki_crt
+                                                                   # ]]]
+# .. envvar:: checkmk_server__pki_crt [[[
 #
-# Host certificate, relative to ``checkmk_server__pki_realm``.
+# Host certificate, relative to :envvar:`checkmk_server__pki_realm`.
 checkmk_server__pki_crt: 'default.crt'
 
-
-# .. envvar:: checkmk_server__pki_key
+                                                                   # ]]]
+# .. envvar:: checkmk_server__pki_key [[[
 #
-# Host private key, relative to ``checkmk_server__pki_realm``.
+# Host private key, relative to :envvar:`checkmk_server__pki_realm`.
 checkmk_server__pki_key: 'default.key'
 
-
-# .. envvar:: checkmk_server__tls_options
+                                                                   # ]]]
+# .. envvar:: checkmk_server__tls_options [[[
 #
 # Additional Apache mod_ssl options. Valid configuration keys:
 # ``SSLCipherSuite``, ``SSLHonorCipherOrder``, ``SSLProtocols``,
@@ -683,3 +689,6 @@ checkmk_server__pki_key: 'default.key'
 checkmk_server__tls_options:
   SSLHonorCipherOrder: 'On'
   SSLCipherSuite: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
+                                                                   # ]]]
+                                                                   # ]]]
+                                                                   # ]]]

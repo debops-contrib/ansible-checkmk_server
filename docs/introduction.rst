@@ -1,7 +1,7 @@
 Introduction
 ============
 
-``debops.checkmk_server`` is an Ansible_ role which installs and manages
+debops.checkmk_server_ is an Ansible_ role which installs and manages
 Check_MK_, a Nagios-based system monitoring solution. Check_MK supports
 different monitoring backends such as Nagios_ or Icinga_ (v1.x) and features
 a powerful configuration language for creating check inventories.

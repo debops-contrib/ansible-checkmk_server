@@ -1,9 +1,9 @@
-Default variables: configuration
+Default variable details
 ================================
 
 .. include:: includes/all.rst
 
-Some of the ``debops.checkmk_server`` default variables have more extensive
+Some of the debops.checkmk_server_ default variables have more extensive
 configuration than simple strings or lists, here you can find documentation
 and examples for them.
 
@@ -37,8 +37,8 @@ This configuration variable indicates if SSH keys should be configured for
 accessing the Check_MK agent. If set to a non-empty value a additional
 Check_MK host tag "Check_MK Agent via SSH" is configured and the SSH public
 key is set as Ansible fact, so that it can be used by the
-``debops.checkmk_agent`` role to configure SSH-based agent access. The
-``checkmk_server__sshkeys`` variable is a dictionary which support the
+debops.checkmk_agent_ role to configure SSH-based agent access. The
+:envvar:`checkmk_server__sshkeys` variable is a dictionary which support the
 following keys:
 
 ``generate_keypair``
@@ -260,11 +260,11 @@ via Ansible inventory:
   Optional. List of failover LDAP host names.
 
 ``group_filter``
-  Optional. Group search filter (e.g. ``(objectclass=groupOfNames)``). This
+  Optional. Group search filter (e. g. ``(objectclass=groupOfNames)``). This
   will overwrite the default set by ``item.directory_type``.
 
 ``group_member``
-  Optional. Group member attribute name (e.g. ``member``).
+  Optional. Group member attribute name (e. g. ``member``).
 
 ``group_scope``
   Optional. Group search scope. Allowed values are ``sub`` (search whole
@@ -297,14 +297,14 @@ via Ansible inventory:
   ``True`` or ``False``. Defaults to: ``False``
 
 ``user_filter``
-  Optional. User search filter (e.g. ``(objectclass=account)``). This
+  Optional. User search filter (e. g. ``(objectclass=account)``). This
   will overwrite the default set by ``item.directory_type``.
 
 ``user_filter_group``
   Optional. Filter users by group.
 
 ``user_id``
-  Optional. User ID attribute name (e.g. ``uid``).
+  Optional. User ID attribute name (e. g. ``uid``).
 
 ``user_id_umlauts``
   Optional. Translate Umlauts in user IDs (deprecated). Allowed values are
@@ -461,7 +461,7 @@ name as top key. The following sub keys are supported as site properties.
   Optional. Ignore SSL certificate errors. Defaults to ``False``.
 
 ``multisiteurl``
-  Optional. URL of the remote Check_MK site including ``/check_mk/``. This
+  Optional. URL of the remote Check_MK site including :file:`/check_mk/`. This
   will be used by the main site to fetch resources from this site.
 
 ``password``

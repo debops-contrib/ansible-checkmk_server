@@ -28,7 +28,7 @@ to install Check_MK server:
 .. literalinclude:: playbooks/checkmk_server.yml
    :language: yaml
 
-The inclusion of the ``debops.ferm`` is optional. This playbooks is shipped
+The inclusion of the debops.ferm_ is optional. This playbooks is shipped
 with this role under :file:`docs/playbooks/checkmk_server.yml` from which you
 can symlink it to your playbook directory.
 
@@ -37,9 +37,9 @@ Ansible tags
 ------------
 
 You can use Ansible ``--tags`` or ``--skip-tags`` parameters to limit what
-tasks are performed during Ansible run. This can be used after host is first
+tasks are performed during Ansible run. This can be used after a host was first
 configured to speed up playbook execution, when you are sure that most of the
-configuration has not been changed.
+configuration is already in the desired state.
 
 Available role tags:
 
