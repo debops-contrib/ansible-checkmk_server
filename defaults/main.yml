@@ -46,11 +46,10 @@ checkmk_server__patches:
 #
 # Firewall configuration using the debops.ferm_ Ansible role.
 checkmk_server__ferm_dependent_rules: '{{
-  checkmk_server__ferm_web_rules +
-  (checkmk_server__ferm_livestatus_rules if checkmk_server__multisite_livestatus else [])
-
+    checkmk_server__ferm_web_rules +
+    (checkmk_server__ferm_livestatus_rules if checkmk_server__multisite_livestatus else [])
+  }}'
                                                                    # ]]]
-}}'
 
 # .. envvar:: checkmk_server__ferm_web_rules [[[
 #
@@ -171,12 +170,11 @@ checkmk_server__webapi_url: '{{ checkmk_server__site_url + "/check_mk/webapi.py"
 # values will shutdown Check_MK during reconfiguration. Check
 # :ref:`checkmk_server__ref_omd_config` for more details.
 checkmk_server__omd_config: '{{
-  checkmk_server__omd_config_email +
-  checkmk_server__omd_config_core +
-  (checkmk_server__omd_config_livestatus if checkmk_server__multisite_livestatus|d() else [])
-
+    checkmk_server__omd_config_email +
+    checkmk_server__omd_config_core +
+    (checkmk_server__omd_config_livestatus if checkmk_server__multisite_livestatus|d() else [])
+  }}'
                                                                    # ]]]
-}}'
 
 # .. envvar:: checkmk_server__omd_config_email [[[
 #
