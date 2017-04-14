@@ -1,7 +1,7 @@
 ---
-#
-# Check_MK site configuration
-#
+# vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# Check_MK site configuration [[[1
 - name: Get Check_MK default version
   stat:
     path: '/omd/versions/default'

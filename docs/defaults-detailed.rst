@@ -1,7 +1,9 @@
-Default variables: configuration
+Default variable details
 ================================
 
-Some of the ``debops.checkmk_server`` default variables have more extensive
+.. include:: includes/all.rst
+
+Some of the debops-contrib.checkmk_server_ default variables have more extensive
 configuration than simple strings or lists, here you can find documentation
 and examples for them.
 
@@ -35,8 +37,8 @@ This configuration variable indicates if SSH keys should be configured for
 accessing the Check_MK agent. If set to a non-empty value a additional
 Check_MK host tag "Check_MK Agent via SSH" is configured and the SSH public
 key is set as Ansible fact, so that it can be used by the
-``debops.checkmk_agent`` role to configure SSH-based agent access. The
-``checkmk_server__sshkeys`` variable is a dictionary which support the
+debops-contrib.checkmk_agent_ role to configure SSH-based agent access. The
+:envvar:`checkmk_server__sshkeys` variable is a dictionary which support the
 following keys:
 
 ``generate_keypair``
@@ -84,10 +86,8 @@ as a list of YAML dictionaries with the following configuration keys. One of
 
 ``checksum``
   Optional. Checksum of the download archive given in the ``url`` parameter.
-  Cannot be combined with the ``path`` parameter. For the accepted parameter
-  format check the Ansible `get_url module`_ documentation.
-
-.. _get_url module: https://docs.ansible.com/ansible/get_url_module.html#options
+  Cannot be combined with the ``path`` parameter. Refer to the `Ansible get_url
+  module`_ for the accepted parameter format.
 
 
 .. _checkmk_server__multisite_users:
@@ -260,11 +260,11 @@ via Ansible inventory:
   Optional. List of failover LDAP host names.
 
 ``group_filter``
-  Optional. Group search filter (e.g. ``(objectclass=groupOfNames)``). This
+  Optional. Group search filter (e. g. ``(objectclass=groupOfNames)``). This
   will overwrite the default set by ``item.directory_type``.
 
 ``group_member``
-  Optional. Group member attribute name (e.g. ``member``).
+  Optional. Group member attribute name (e. g. ``member``).
 
 ``group_scope``
   Optional. Group search scope. Allowed values are ``sub`` (search whole
@@ -297,14 +297,14 @@ via Ansible inventory:
   ``True`` or ``False``. Defaults to: ``False``
 
 ``user_filter``
-  Optional. User search filter (e.g. ``(objectclass=account)``). This
+  Optional. User search filter (e. g. ``(objectclass=account)``). This
   will overwrite the default set by ``item.directory_type``.
 
 ``user_filter_group``
   Optional. Filter users by group.
 
 ``user_id``
-  Optional. User ID attribute name (e.g. ``uid``).
+  Optional. User ID attribute name (e. g. ``uid``).
 
 ``user_id_umlauts``
   Optional. Translate Umlauts in user IDs (deprecated). Allowed values are
@@ -415,21 +415,23 @@ Example
 ~~~~~~~
 
 Small example configuration for user authentication via LDAP showing the use
-of some LDAP plugins::
+of some LDAP plugins:
 
-    checkmk_server__multisite_user_connections:
-      - server: 'localhost'
-        binddn: 'cn=admin,dc=example,dc=com'
-        bindpw: 'secret'
-        group_dn: 'ou=groups,dc=example,dc=com'
-        user_dn: 'ou=users,dc=example,dc=com'
-        user_filter: '(objectclass=posixAccount)'
-        active_plugins:
-          alias:
-            attr: 'gecos'
-          groups_to_roles:
-            admin:
-              - group_dn: 'cn=wato-admin,ou=groups,dc=example,dc=com'
+.. code-block:: yaml
+
+   checkmk_server__multisite_user_connections:
+     - server: 'localhost'
+       binddn: 'cn=admin,dc=example,dc=com'
+       bindpw: 'secret'
+       group_dn: 'ou=groups,dc=example,dc=com'
+       user_dn: 'ou=users,dc=example,dc=com'
+       user_filter: '(objectclass=posixAccount)'
+       active_plugins:
+         alias:
+           attr: 'gecos'
+         groups_to_roles:
+           admin:
+             - group_dn: 'cn=wato-admin,ou=groups,dc=example,dc=com'
 
 This will synchronize all users in from the DN ``ou=users,dc=example,dc=com``
 to WATO, fills the user's alias property with the value from the ``gecos``
@@ -442,7 +444,7 @@ group.
 checkmk_server__distributed_sites
 ---------------------------------
 
-This setting will define Check_MK multisite connections to other Check_MK
+This setting will define Check_MK Multisite connections to other Check_MK
 monitoring sites. Each site entry is a nested YAML dictionary with the site
 name as top key. The following sub keys are supported as site properties.
 
@@ -459,7 +461,7 @@ name as top key. The following sub keys are supported as site properties.
   Optional. Ignore SSL certificate errors. Defaults to ``False``.
 
 ``multisiteurl``
-  Optional. URL of the remote Check_MK site including ``/check_mk/``. This
+  Optional. URL of the remote Check_MK site including :file:`/check_mk/`. This
   will be used by the main site to fetch resources from this site.
 
 ``password``
@@ -525,4 +527,4 @@ via Ansible inventory.
 
 A lot of parameter descriptions are copied from the upstream source code which is copyrighted
 by `Mathias Kettner <mk@mathias-kettner.de>`_ and released under the
-`GNU Public License v2 <https://tldrlegal.com/license/gnu-general-public-license,-version2-%28gpl-2%29>`_.
+`GPL-2.0 <https://tldrlegal.com/license/gnu-general-public-license,-version2-%28gpl-2%29>`_.

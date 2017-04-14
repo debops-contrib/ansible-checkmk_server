@@ -1,0 +1,3 @@
+
+* Fix internal role namespace
+  git ls-files -z "$(git rev-parse --show-toplevel)" | xargs --null -I '{}' find '{}' -type f -print0 | xargs --null sed --in-place --regexp-extended 's/\<(checkmk_server)_([^_])/\1__\2/g;'
