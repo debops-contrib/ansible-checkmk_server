@@ -16,7 +16,7 @@
 # .. envvar:: checkmk_server__version [[[
 #
 # Check_MK software version.
-checkmk_server__version: '1.2.8p24'
+checkmk_server__version: '1.2.8p25'
 
                                                                    # ]]]
 # .. envvar:: checkmk_server__version_label [[[
